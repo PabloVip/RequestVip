@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
-import { isFollowVerified } from '@/lib/instagram';
 import { getAudioFeatures } from '@/lib/spotify';
 import { createServiceClient } from '@/lib/supabase-server';
 
@@ -24,7 +23,7 @@ export async function POST(req: NextRequest) {
 
   const attendeeId = req.cookies.get('attendee_id')?.value;
   if (!attendeeId) {
-    return NextResponse.json({ error: 'Not verified' }, { status: 401 });
+    return NextResponse.json({ error: 'Not registered' }, { status: 401 });
   }
 
   const supabase = createServiceClient();
@@ -42,17 +41,6 @@ export async function POST(req: NextRequest) {
     return NextResponse.json(
       { error: 'DJ no está aceptando peticiones ahora' },
       { status: 423 }
-    );
-  }
-
-  const verified = await isFollowVerified({
-    attendeeId,
-    djId: session.dj_id,
-  });
-  if (!verified) {
-    return NextResponse.json(
-      { error: 'Follow no verificado o expirado' },
-      { status: 403 }
     );
   }
 
