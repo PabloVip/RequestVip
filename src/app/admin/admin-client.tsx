@@ -20,12 +20,19 @@ interface Stats {
   total: number;
 }
 
+interface GlobalStats {
+  totalSessions: number;
+  totalRequests: number;
+  acceptanceRate: number | null;
+}
+
 interface Props {
   djName: string;
   djInstagram: string;
   activeSession: ActiveSession | null;
   stats: Stats | null;
   userEmail: string;
+  globalStats: GlobalStats;
 }
 
 export default function AdminClient({
@@ -34,6 +41,7 @@ export default function AdminClient({
   activeSession,
   stats,
   userEmail,
+  globalStats,
 }: Props) {
   const router = useRouter();
   const [venue, setVenue] = useState('');
@@ -141,6 +149,36 @@ export default function AdminClient({
           </button>
         </div>
       </header>
+
+      {globalStats.totalSessions > 0 && (
+        <section style={{ marginBottom: '2rem' }}>
+          <h2 style={{ fontSize: '0.875rem', color: '#888', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '0.75rem' }}>
+            Tu actividad
+          </h2>
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(3, 1fr)',
+            gap: '0.75rem',
+          }}>
+            <GlobalStat label="Sesiones" value={globalStats.totalSessions} />
+            <GlobalStat label="Peticiones" value={globalStats.totalRequests} />
+            <GlobalStat label="Aceptación" value={globalStats.acceptanceRate !== null ? `${globalStats.acceptanceRate}%` : '—'} />
+          </div>
+          <Link
+            href="/admin/sessions"
+            style={{
+              display: 'block',
+              marginTop: '0.75rem',
+              color: '#888',
+              fontSize: '0.875rem',
+              textAlign: 'center',
+              textDecoration: 'underline',
+            }}
+          >
+            Ver historial de sesiones →
+          </Link>
+        </section>
+      )}
 
       {activeSession ? (
         <section>
@@ -344,6 +382,15 @@ function Stat({ label, value }: { label: string; value: number }) {
     <div style={{ background: 'rgba(0,0,0,0.3)', padding: '0.625rem 0.5rem', borderRadius: '6px' }}>
       <p style={{ fontSize: '0.6875rem', color: '#888' }}>{label}</p>
       <p style={{ fontSize: '1.25rem', fontWeight: 500, marginTop: '0.125rem' }}>{value}</p>
+    </div>
+  );
+}
+
+function GlobalStat({ label, value }: { label: string; value: number | string }) {
+  return (
+    <div style={{ background: '#1a1a1a', border: '1px solid #2a2a2a', padding: '0.75rem', borderRadius: '8px' }}>
+      <p style={{ fontSize: '0.75rem', color: '#888' }}>{label}</p>
+      <p style={{ fontSize: '1.5rem', fontWeight: 500, marginTop: '0.125rem' }}>{value}</p>
     </div>
   );
 }
