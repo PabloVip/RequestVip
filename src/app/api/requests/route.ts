@@ -3,9 +3,6 @@ import { z } from 'zod';
 import { getAudioFeatures } from '@/lib/spotify';
 import { createServiceClient } from '@/lib/supabase-server';
 
-const REQUEST_COOLDOWN_MS = 5 * 60 * 1000;
-const MAX_REQUESTS_PER_SESSION = 5;
-
 const Body = z.object({
   session_id: z.string().uuid(),
   spotify_track_id: z.string().min(1).max(64),
@@ -13,6 +10,7 @@ const Body = z.object({
   artist: z.string().min(1).max(200),
   album_art_url: z.string().url().nullable().optional(),
   duration_ms: z.number().int().positive().optional(),
+  explicit: z.boolean().optional(),
 });
 
 export async function POST(req: NextRequest) {
@@ -44,6 +42,35 @@ export async function POST(req: NextRequest) {
     );
   }
 
+  const { data: prefs } = await supabase
+    .from('dj_preferences')
+    .select('*')
+    .eq('dj_id', session.dj_id)
+    .single();
+
+  const cooldownMs = (prefs?.cooldown_seconds ?? 300) * 1000;
+  const maxRequests = prefs?.max_requests_per_user ?? 5;
+
+  if (prefs?.reject_explicit && body.data.explicit) {
+    return NextResponse.json(
+      { error: 'El DJ no acepta canciones explícitas' },
+      { status: 422 }
+    );
+  }
+
+  if (prefs?.auto_reject_blacklist && (prefs.blacklist_terms?.length ?? 0) > 0) {
+    const haystack = `${body.data.title} ${body.data.artist}`.toLowerCase();
+    const matched = prefs.blacklist_terms.find((term: string) =>
+      haystack.includes(term.toLowerCase())
+    );
+    if (matched) {
+      return NextResponse.json(
+        { error: `El DJ no acepta este tipo de música esta noche` },
+        { status: 422 }
+      );
+    }
+  }
+
   const { data: cooldown } = await supabase
     .from('attendee_cooldowns')
     .select('last_request_at, request_count')
@@ -52,17 +79,18 @@ export async function POST(req: NextRequest) {
     .maybeSingle();
 
   if (cooldown) {
-    if (cooldown.request_count >= MAX_REQUESTS_PER_SESSION) {
+    if (cooldown.request_count >= maxRequests) {
       return NextResponse.json(
         { error: 'Has alcanzado el límite de peticiones para esta sesión' },
         { status: 429 }
       );
     }
     const elapsed = Date.now() - new Date(cooldown.last_request_at).getTime();
-    if (elapsed < REQUEST_COOLDOWN_MS) {
-      const wait = Math.ceil((REQUEST_COOLDOWN_MS - elapsed) / 1000);
+    if (elapsed < cooldownMs) {
+      const wait = Math.ceil((cooldownMs - elapsed) / 1000);
+      const waitLabel = wait >= 60 ? `${Math.ceil(wait / 60)} min` : `${wait}s`;
       return NextResponse.json(
-        { error: `Espera ${wait}s antes de pedir otra canción` },
+        { error: `Espera ${waitLabel} antes de pedir otra canción` },
         { status: 429 }
       );
     }

@@ -119,18 +119,16 @@ export default function AdminClient({
           <h1 style={{ fontSize: '1.5rem', fontWeight: 600 }}>{djName}</h1>
           <p style={{ color: '#888', fontSize: '0.875rem' }}>@{djInstagram}</p>
         </div>
-        <div style={{ display: 'flex', gap: '0.5rem' }}>
+        <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+          <Link
+            href="/admin/preferences"
+            style={navLink}
+          >
+            Preferencias
+          </Link>
           <Link
             href="/admin/profile"
-            style={{
-              background: '#1a1a1a',
-              color: '#fff',
-              border: '1px solid #333',
-              padding: '0.5rem 1rem',
-              borderRadius: '6px',
-              fontSize: '0.875rem',
-              textDecoration: 'none',
-            }}
+            style={navLink}
           >
             Perfil
           </Link>
@@ -376,6 +374,16 @@ export default function AdminClient({
     </main>
   );
 }
+
+const navLink: React.CSSProperties = {
+  background: '#1a1a1a',
+  color: '#fff',
+  border: '1px solid #333',
+  padding: '0.5rem 1rem',
+  borderRadius: '6px',
+  fontSize: '0.875rem',
+  textDecoration: 'none',
+};
 
 function Stat({ label, value }: { label: string; value: number }) {
   return (
