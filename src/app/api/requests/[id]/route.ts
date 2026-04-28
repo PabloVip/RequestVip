@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
-import { createServiceClient } from '@/lib/supabase-server';
+import { createUserClient, createServiceClient } from '@/lib/supabase-server';
 
 const Body = z.object({
   action: z.enum(['accept', 'reject', 'mark_played']),
@@ -17,7 +17,30 @@ export async function PATCH(
     return NextResponse.json({ error: 'Invalid input' }, { status: 400 });
   }
 
-  const supabase = createServiceClient();
+  const supabase = await createUserClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+
+  const service = createServiceClient();
+
+  const { data: dj } = await service
+    .from('djs')
+    .select('id')
+    .eq('user_id', user.id)
+    .single();
+
+  if (!dj) return NextResponse.json({ error: 'DJ not found' }, { status: 404 });
+
+  const { data: request } = await service
+    .from('song_requests')
+    .select('id, sessions(dj_id)')
+    .eq('id', id)
+    .single();
+
+  const ownerId = (request?.sessions as unknown as { dj_id: string } | null)?.dj_id;
+  if (!request || ownerId !== dj.id) {
+    return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+  }
 
   const update: Record<string, unknown> = {};
   if (body.data.action === 'accept') {
@@ -32,7 +55,7 @@ export async function PATCH(
     update.played_at = new Date().toISOString();
   }
 
-  const { data, error } = await supabase
+  const { data, error } = await service
     .from('song_requests')
     .update(update)
     .eq('id', id)
