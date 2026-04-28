@@ -26,9 +26,7 @@ export default function VerifyStep({ sessionId, djInstagram, onVerified }: Props
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ session_id: sessionId }),
       });
-      if (res.ok) {
-        onVerified();
-      }
+      if (res.ok) onVerified();
     } catch {
       setContinuing(false);
     }
@@ -37,34 +35,42 @@ export default function VerifyStep({ sessionId, djInstagram, onVerified }: Props
   return (
     <div>
       <div style={{
-        background: '#1a1a1a',
+        background: 'var(--bg-subtle)',
+        border: '0.5px solid var(--border-subtle)',
         padding: '2rem 1.5rem',
-        borderRadius: '12px',
-        marginBottom: '1.5rem',
+        borderRadius: '14px',
+        marginBottom: '1rem',
         textAlign: 'center',
       }}>
-        <p style={{ color: '#aaa', fontSize: '0.9375rem', marginBottom: '1.5rem' }}>
-          Para pedir canciones, sigue al DJ en Instagram
+        <p style={{
+          color: 'var(--fg-muted)',
+          fontSize: '0.9375rem',
+          marginBottom: '1.5rem',
+          lineHeight: 1.5,
+        }}>
+          Para pedir canciones,<br />sigue al DJ en Instagram
         </p>
 
         <button
           onClick={handleFollow}
           style={{
-            display: 'inline-block',
-            background: '#fff',
-            color: '#000',
-            padding: '0.875rem 2rem',
-            borderRadius: '8px',
+            background: 'var(--accent)',
+            color: 'var(--accent-fg)',
+            padding: '0.875rem 1.75rem',
+            borderRadius: '10px',
             fontWeight: 500,
             border: 'none',
-            fontSize: '1rem',
-            marginBottom: '1rem',
+            fontSize: '0.9375rem',
+            marginBottom: '0.75rem',
           }}
         >
           Seguir a @{djInstagram}
         </button>
 
-        <p style={{ color: '#666', fontSize: '0.8125rem' }}>
+        <p style={{
+          color: 'var(--fg-faint)',
+          fontSize: '0.75rem',
+        }}>
           Se abrirá Instagram en otra pestaña
         </p>
       </div>
@@ -74,12 +80,12 @@ export default function VerifyStep({ sessionId, djInstagram, onVerified }: Props
         disabled={continuing}
         style={{
           width: '100%',
-          background: followed ? '#fff' : '#1a1a1a',
-          color: followed ? '#000' : '#aaa',
-          border: followed ? 'none' : '1px solid #333',
-          padding: '1rem',
-          borderRadius: '8px',
-          fontSize: '1rem',
+          background: followed ? 'var(--accent)' : 'var(--bg-muted)',
+          color: followed ? 'var(--accent-fg)' : 'var(--fg)',
+          border: followed ? 'none' : '0.5px solid var(--border)',
+          padding: '0.875rem',
+          borderRadius: '10px',
+          fontSize: '0.9375rem',
           fontWeight: 500,
         }}
       >

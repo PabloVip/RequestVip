@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase-browser';
+import ThemeToggle from '@/components/theme-toggle';
 
 export default function LoginForm() {
   const router = useRouter();
@@ -40,105 +41,71 @@ export default function LoginForm() {
       alignItems: 'center',
       justifyContent: 'center',
       padding: '1.5rem',
+      position: 'relative',
     }}>
-      <div style={{
-        width: '100%',
-        maxWidth: '400px',
-      }}>
-        <h1 style={{
-          fontSize: '2rem',
-          fontWeight: 600,
-          marginBottom: '0.5rem',
-          textAlign: 'center',
-        }}>
-          TuneDrop
-        </h1>
-        <p style={{
-          color: '#888',
-          textAlign: 'center',
-          marginBottom: '2rem',
-        }}>
-          Inicia sesión como DJ
-        </p>
+      <div style={{ position: 'absolute', top: '1.5rem', right: '1.5rem' }}>
+        <ThemeToggle />
+      </div>
+
+      <div style={{ width: '100%', maxWidth: '380px' }}>
+        <div style={{ textAlign: 'center', marginBottom: '2.5rem' }}>
+          <h1 style={{
+            fontSize: '1.75rem',
+            fontWeight: 500,
+            letterSpacing: '-0.02em',
+            marginBottom: '0.5rem',
+          }}>
+            TuneDrop
+          </h1>
+          <p style={{ color: 'var(--fg-subtle)', fontSize: '0.9375rem' }}>
+            Inicia sesión como DJ
+          </p>
+        </div>
 
         <form onSubmit={handleSubmit}>
           <div style={{ marginBottom: '1rem' }}>
-            <label style={{ fontSize: '0.875rem', color: '#aaa', display: 'block', marginBottom: '0.5rem' }}>
-              Email
-            </label>
+            <label style={labelStyle}>Email</label>
             <input
               type="email"
               required
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              style={{
-                width: '100%',
-                background: '#1a1a1a',
-                color: '#fff',
-                border: '1px solid #333',
-                padding: '0.875rem 1rem',
-                borderRadius: '8px',
-                fontSize: '1rem',
-              }}
+              autoComplete="email"
             />
           </div>
 
           <div style={{ marginBottom: '1.5rem' }}>
-            <label style={{ fontSize: '0.875rem', color: '#aaa', display: 'block', marginBottom: '0.5rem' }}>
-              Contraseña
-            </label>
+            <label style={labelStyle}>Contraseña</label>
             <input
               type="password"
               required
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              style={{
-                width: '100%',
-                background: '#1a1a1a',
-                color: '#fff',
-                border: '1px solid #333',
-                padding: '0.875rem 1rem',
-                borderRadius: '8px',
-                fontSize: '1rem',
-              }}
+              autoComplete="current-password"
             />
           </div>
 
           {error && (
-            <div style={{
-              background: '#3a0a0a',
-              color: '#f87171',
-              padding: '0.75rem 1rem',
-              borderRadius: '8px',
-              marginBottom: '1rem',
-              fontSize: '0.875rem',
-            }}>
-              {error}
-            </div>
+            <div style={errorBoxStyle}>{error}</div>
           )}
 
-          <button
-            type="submit"
-            disabled={loading}
-            style={{
-              width: '100%',
-              background: '#fff',
-              color: '#000',
-              border: 'none',
-              padding: '1rem',
-              borderRadius: '8px',
-              fontSize: '1rem',
-              fontWeight: 500,
-              marginBottom: '1rem',
-            }}
-          >
+          <button type="submit" disabled={loading} style={primaryButtonStyle}>
             {loading ? 'Entrando...' : 'Iniciar sesión'}
           </button>
         </form>
 
-        <p style={{ textAlign: 'center', color: '#888', fontSize: '0.875rem' }}>
+        <p style={{
+          textAlign: 'center',
+          color: 'var(--fg-subtle)',
+          fontSize: '0.875rem',
+          marginTop: '1.5rem',
+        }}>
           ¿No tienes cuenta?{' '}
-          <Link href="/signup" style={{ color: '#fff', textDecoration: 'underline' }}>
+          <Link href="/signup" style={{
+            color: 'var(--accent-soft-fg)',
+            textDecoration: 'none',
+            fontWeight: 500,
+          }}>
             Regístrate
           </Link>
         </p>
@@ -146,3 +113,32 @@ export default function LoginForm() {
     </main>
   );
 }
+
+const labelStyle: React.CSSProperties = {
+  fontSize: '0.8125rem',
+  color: 'var(--fg-subtle)',
+  display: 'block',
+  marginBottom: '0.5rem',
+  fontWeight: 500,
+};
+
+const errorBoxStyle: React.CSSProperties = {
+  background: 'var(--danger-bg)',
+  color: 'var(--danger-fg)',
+  border: '0.5px solid var(--danger-border)',
+  padding: '0.75rem 1rem',
+  borderRadius: '8px',
+  marginBottom: '1rem',
+  fontSize: '0.875rem',
+};
+
+const primaryButtonStyle: React.CSSProperties = {
+  width: '100%',
+  background: 'var(--accent)',
+  color: 'var(--accent-fg)',
+  border: 'none',
+  padding: '0.875rem',
+  borderRadius: '8px',
+  fontSize: '0.9375rem',
+  fontWeight: 500,
+};

@@ -2,6 +2,7 @@ import { redirect, notFound } from 'next/navigation';
 import Link from 'next/link';
 import { createUserClient, createServiceClient } from '@/lib/supabase-server';
 import RequestsChart from './requests-chart';
+import ThemeToggle from '@/components/theme-toggle';
 
 export default async function SessionDetailPage({
   params,
@@ -41,7 +42,6 @@ export default async function SessionDetailPage({
   const list = requests ?? [];
 
   const accepted = list.filter(r => r.status === 'accepted' || r.status === 'played').length;
-  const rejected = list.filter(r => r.status === 'rejected').length;
   const played   = list.filter(r => r.status === 'played').length;
   const acceptanceRate = list.length > 0 ? Math.round((accepted / list.length) * 100) : 0;
 
@@ -57,14 +57,6 @@ export default async function SessionDetailPage({
   }
   const topTracks = Array.from(trackCount.values())
     .sort((a, b) => b.count - a.count)
-    .slice(0, 5);
-
-  const requesterCount = new Map<string, number>();
-  for (const r of list) {
-    requesterCount.set(r.attendee_id, (requesterCount.get(r.attendee_id) ?? 0) + 1);
-  }
-  const topRequesters = Array.from(requesterCount.entries())
-    .sort((a, b) => b[1] - a[1])
     .slice(0, 5);
 
   const buckets: { hour: string; count: number }[] = [];
@@ -97,22 +89,39 @@ export default async function SessionDetailPage({
   return (
     <main style={{
       minHeight: '100vh',
-      maxWidth: '700px',
+      maxWidth: '720px',
       margin: '0 auto',
-      padding: '1.5rem',
+      padding: '2rem 1.5rem',
     }}>
-      <Link
-        href="/admin/sessions"
-        style={{ color: '#888', fontSize: '0.875rem', textDecoration: 'none', marginBottom: '1.5rem', display: 'inline-block' }}
-      >
-        ← Historial
-      </Link>
+      <div style={{
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        marginBottom: '1.5rem',
+      }}>
+        <Link href="/admin/sessions" style={{
+          color: 'var(--fg-subtle)',
+          fontSize: '0.875rem',
+          textDecoration: 'none',
+        }}>
+          ← Historial
+        </Link>
+        <ThemeToggle />
+      </div>
 
       <header style={{ marginBottom: '2rem' }}>
-        <h1 style={{ fontSize: '1.75rem', fontWeight: 600 }}>
+        <h1 style={{
+          fontSize: '1.75rem',
+          fontWeight: 500,
+          letterSpacing: '-0.025em',
+        }}>
           {session.venue ?? 'Sesión sin nombre'}
         </h1>
-        <p style={{ color: '#888', fontSize: '0.875rem', marginTop: '0.25rem' }}>
+        <p style={{
+          color: 'var(--fg-subtle)',
+          fontSize: '0.875rem',
+          marginTop: '0.25rem',
+        }}>
           {new Date(session.started_at).toLocaleString('es-ES')}
           {duration !== null && ` · ${duration} min`}
         </p>
@@ -127,50 +136,53 @@ export default async function SessionDetailPage({
         <Stat label="Total" value={list.length} />
         <Stat label="Aceptadas" value={accepted} />
         <Stat label="Sonadas" value={played} />
-        <Stat label="Aceptación" value={`${acceptanceRate}%`} />
+        <Stat label="Aceptación" value={`${acceptanceRate}%`} accent />
       </section>
 
       {buckets.length > 0 && (
         <section style={{ marginBottom: '2rem' }}>
-          <h2 style={{ fontSize: '0.875rem', color: '#888', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '0.75rem' }}>
-            Peticiones por hora
-          </h2>
+          <h2 style={sectionLabelStyle}>Peticiones por hora</h2>
           <RequestsChart buckets={buckets} />
         </section>
       )}
 
       {topTracks.length > 0 && (
         <section style={{ marginBottom: '2rem' }}>
-          <h2 style={{ fontSize: '0.875rem', color: '#888', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '0.75rem' }}>
-            Más pedidas
-          </h2>
+          <h2 style={sectionLabelStyle}>Más pedidas</h2>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
             {topTracks.map((track, i) => (
               <div key={i} style={{
                 display: 'flex',
                 alignItems: 'center',
-                gap: '0.75rem',
-                background: '#1a1a1a',
-                border: '1px solid #2a2a2a',
-                padding: '0.75rem',
-                borderRadius: '8px',
+                gap: '0.875rem',
+                background: 'var(--bg-subtle)',
+                border: '0.5px solid var(--border-subtle)',
+                padding: '0.75rem 1rem',
+                borderRadius: '10px',
               }}>
                 <div style={{
                   width: '40px',
                   height: '40px',
-                  background: '#2a2a2a',
-                  borderRadius: '4px',
+                  background: 'var(--bg-muted)',
+                  borderRadius: '6px',
                   flexShrink: 0,
                   backgroundImage: track.albumArt ? `url(${track.albumArt})` : undefined,
                   backgroundSize: 'cover',
+                  backgroundPosition: 'center',
                 }} />
                 <div style={{ flex: 1, minWidth: 0 }}>
-                  <p style={{ fontSize: '0.9375rem', fontWeight: 500 }}>{track.title}</p>
-                  <p style={{ fontSize: '0.8125rem', color: '#888' }}>{track.artist}</p>
+                  <p style={{
+                    fontSize: '0.9375rem',
+                    fontWeight: 500,
+                    letterSpacing: '-0.01em',
+                  }}>
+                    {track.title}
+                  </p>
+                  <p style={{ fontSize: '0.8125rem', color: 'var(--fg-subtle)' }}>{track.artist}</p>
                 </div>
                 <span style={{
-                  background: '#2a2a2a',
-                  color: '#aaa',
+                  background: 'var(--bg-muted)',
+                  color: 'var(--fg)',
                   padding: '0.25rem 0.625rem',
                   borderRadius: '999px',
                   fontSize: '0.8125rem',
@@ -186,32 +198,37 @@ export default async function SessionDetailPage({
 
       {list.length > 0 && (
         <section>
-          <h2 style={{ fontSize: '0.875rem', color: '#888', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '0.75rem' }}>
-            Todas las peticiones ({list.length})
-          </h2>
+          <h2 style={sectionLabelStyle}>Todas las peticiones ({list.length})</h2>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.375rem' }}>
             {list.map(r => (
               <div key={r.id} style={{
                 display: 'flex',
                 alignItems: 'center',
                 gap: '0.75rem',
-                background: '#1a1a1a',
-                border: '1px solid #2a2a2a',
+                background: 'var(--bg-subtle)',
+                border: '0.5px solid var(--border-subtle)',
                 padding: '0.625rem 0.75rem',
-                borderRadius: '8px',
+                borderRadius: '10px',
               }}>
                 <div style={{
                   width: '36px',
                   height: '36px',
-                  background: '#2a2a2a',
-                  borderRadius: '4px',
+                  background: 'var(--bg-muted)',
+                  borderRadius: '5px',
                   flexShrink: 0,
                   backgroundImage: r.album_art_url ? `url(${r.album_art_url})` : undefined,
                   backgroundSize: 'cover',
+                  backgroundPosition: 'center',
                 }} />
                 <div style={{ flex: 1, minWidth: 0 }}>
-                  <p style={{ fontSize: '0.875rem', fontWeight: 500 }}>{r.title}</p>
-                  <p style={{ fontSize: '0.75rem', color: '#888' }}>{r.artist}</p>
+                  <p style={{
+                    fontSize: '0.875rem',
+                    fontWeight: 500,
+                    letterSpacing: '-0.01em',
+                  }}>
+                    {r.title}
+                  </p>
+                  <p style={{ fontSize: '0.75rem', color: 'var(--fg-subtle)' }}>{r.artist}</p>
                 </div>
                 <StatusBadge status={r.status} />
               </div>
@@ -221,7 +238,11 @@ export default async function SessionDetailPage({
       )}
 
       {list.length === 0 && (
-        <p style={{ color: '#666', textAlign: 'center', padding: '2rem' }}>
+        <p style={{
+          color: 'var(--fg-subtle)',
+          textAlign: 'center',
+          padding: '2rem',
+        }}>
           No hubo peticiones en esta sesión
         </p>
       )}
@@ -229,22 +250,44 @@ export default async function SessionDetailPage({
   );
 }
 
-function Stat({ label, value }: { label: string; value: number | string }) {
+const sectionLabelStyle: React.CSSProperties = {
+  fontSize: '0.75rem',
+  color: 'var(--fg-subtle)',
+  textTransform: 'uppercase',
+  letterSpacing: '0.08em',
+  marginBottom: '0.75rem',
+  fontWeight: 500,
+};
+
+function Stat({ label, value, accent }: { label: string; value: number | string; accent?: boolean }) {
   return (
-    <div style={{ background: '#1a1a1a', border: '1px solid #2a2a2a', padding: '0.75rem', borderRadius: '8px' }}>
-      <p style={{ fontSize: '0.6875rem', color: '#888' }}>{label}</p>
-      <p style={{ fontSize: '1.25rem', fontWeight: 500, marginTop: '0.125rem' }}>{value}</p>
+    <div style={{
+      background: 'var(--bg-subtle)',
+      border: '0.5px solid var(--border-subtle)',
+      padding: '0.875rem 1rem',
+      borderRadius: '10px',
+    }}>
+      <p style={{ fontSize: '0.75rem', color: 'var(--fg-subtle)' }}>{label}</p>
+      <p style={{
+        fontSize: '1.5rem',
+        fontWeight: 500,
+        marginTop: '0.25rem',
+        letterSpacing: '-0.02em',
+        color: accent ? 'var(--accent-soft-fg)' : 'var(--fg)',
+      }}>
+        {value}
+      </p>
     </div>
   );
 }
 
 function StatusBadge({ status }: { status: string }) {
-  const config: Record<string, { color: string; bg: string; label: string }> = {
-    pending:  { color: '#fbbf24', bg: '#3a2a00', label: 'Pendiente' },
-    accepted: { color: '#34d399', bg: '#0a3320', label: 'Aceptada' },
-    played:   { color: '#a78bfa', bg: '#1a0a3a', label: 'Sonada' },
-    rejected: { color: '#f87171', bg: '#3a0a0a', label: 'Rechazada' },
-    expired:  { color: '#888',    bg: '#222',    label: 'Expirada' },
+  const config: Record<string, { color: string; bg: string; border: string; label: string }> = {
+    pending:  { color: 'var(--warning-fg)', bg: 'var(--warning-bg)', border: 'var(--warning-border)', label: 'Pendiente' },
+    accepted: { color: 'var(--accent-soft-fg)', bg: 'var(--accent-soft)', border: 'var(--accent-border)', label: 'Aceptada' },
+    played:   { color: 'var(--accent-soft-fg)', bg: 'var(--accent-soft)', border: 'var(--accent-border)', label: 'Sonada' },
+    rejected: { color: 'var(--danger-fg)', bg: 'var(--danger-bg)', border: 'var(--danger-border)', label: 'Rechazada' },
+    expired:  { color: 'var(--fg-subtle)', bg: 'var(--bg-muted)', border: 'var(--border)', label: 'Expirada' },
   };
   const c = config[status] ?? config.pending;
   return (
@@ -252,9 +295,11 @@ function StatusBadge({ status }: { status: string }) {
       fontSize: '0.6875rem',
       color: c.color,
       background: c.bg,
+      border: `0.5px solid ${c.border}`,
       padding: '0.25rem 0.5rem',
       borderRadius: '999px',
       whiteSpace: 'nowrap',
+      fontWeight: 500,
     }}>
       {c.label}
     </span>

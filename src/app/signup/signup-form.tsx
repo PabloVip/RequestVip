@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase-browser';
+import ThemeToggle from '@/components/theme-toggle';
 
 export default function SignupForm() {
   const router = useRouter();
@@ -48,153 +49,70 @@ export default function SignupForm() {
       alignItems: 'center',
       justifyContent: 'center',
       padding: '1.5rem',
+      position: 'relative',
     }}>
-      <div style={{
-        width: '100%',
-        maxWidth: '400px',
-      }}>
-        <h1 style={{
-          fontSize: '2rem',
-          fontWeight: 600,
-          marginBottom: '0.5rem',
-          textAlign: 'center',
-        }}>
-          Crear cuenta
-        </h1>
-        <p style={{
-          color: '#888',
-          textAlign: 'center',
-          marginBottom: '2rem',
-        }}>
-          Empieza a recibir peticiones
-        </p>
+      <div style={{ position: 'absolute', top: '1.5rem', right: '1.5rem' }}>
+        <ThemeToggle />
+      </div>
+
+      <div style={{ width: '100%', maxWidth: '380px' }}>
+        <div style={{ textAlign: 'center', marginBottom: '2.5rem' }}>
+          <h1 style={{
+            fontSize: '1.75rem',
+            fontWeight: 500,
+            letterSpacing: '-0.02em',
+            marginBottom: '0.5rem',
+          }}>
+            Crear cuenta
+          </h1>
+          <p style={{ color: 'var(--fg-subtle)', fontSize: '0.9375rem' }}>
+            Empieza a recibir peticiones
+          </p>
+        </div>
 
         <form onSubmit={handleSubmit}>
-          <div style={{ marginBottom: '1rem' }}>
-            <label style={{ fontSize: '0.875rem', color: '#aaa', display: 'block', marginBottom: '0.5rem' }}>
-              Nombre artístico
-            </label>
-            <input
-              type="text"
-              required
-              value={displayName}
-              onChange={(e) => setDisplayName(e.target.value)}
-              placeholder="DJ Marco Vega"
-              style={{
-                width: '100%',
-                background: '#1a1a1a',
-                color: '#fff',
-                border: '1px solid #333',
-                padding: '0.875rem 1rem',
-                borderRadius: '8px',
-                fontSize: '1rem',
-              }}
-            />
+          <div style={{ marginBottom: '0.875rem' }}>
+            <label style={labelStyle}>Nombre artístico</label>
+            <input type="text" required value={displayName} onChange={(e) => setDisplayName(e.target.value)} placeholder="DJ Marco Vega" />
           </div>
 
-          <div style={{ marginBottom: '1rem' }}>
-            <label style={{ fontSize: '0.875rem', color: '#aaa', display: 'block', marginBottom: '0.5rem' }}>
-              Instagram
-            </label>
-            <input
-              type="text"
-              required
-              value={igUsername}
-              onChange={(e) => setIgUsername(e.target.value)}
-              placeholder="@tu_usuario"
-              style={{
-                width: '100%',
-                background: '#1a1a1a',
-                color: '#fff',
-                border: '1px solid #333',
-                padding: '0.875rem 1rem',
-                borderRadius: '8px',
-                fontSize: '1rem',
-              }}
-            />
+          <div style={{ marginBottom: '0.875rem' }}>
+            <label style={labelStyle}>Instagram</label>
+            <input type="text" required value={igUsername} onChange={(e) => setIgUsername(e.target.value)} placeholder="@tu_usuario" />
           </div>
 
-          <div style={{ marginBottom: '1rem' }}>
-            <label style={{ fontSize: '0.875rem', color: '#aaa', display: 'block', marginBottom: '0.5rem' }}>
-              Email
-            </label>
-            <input
-              type="email"
-              required
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              style={{
-                width: '100%',
-                background: '#1a1a1a',
-                color: '#fff',
-                border: '1px solid #333',
-                padding: '0.875rem 1rem',
-                borderRadius: '8px',
-                fontSize: '1rem',
-              }}
-            />
+          <div style={{ marginBottom: '0.875rem' }}>
+            <label style={labelStyle}>Email</label>
+            <input type="email" required value={email} onChange={(e) => setEmail(e.target.value)} autoComplete="email" />
           </div>
 
           <div style={{ marginBottom: '1.5rem' }}>
-            <label style={{ fontSize: '0.875rem', color: '#aaa', display: 'block', marginBottom: '0.5rem' }}>
-              Contraseña
-            </label>
-            <input
-              type="password"
-              required
-              minLength={6}
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              style={{
-                width: '100%',
-                background: '#1a1a1a',
-                color: '#fff',
-                border: '1px solid #333',
-                padding: '0.875rem 1rem',
-                borderRadius: '8px',
-                fontSize: '1rem',
-              }}
-            />
-            <p style={{ fontSize: '0.75rem', color: '#666', marginTop: '0.25rem' }}>
-              Mínimo 6 caracteres
-            </p>
+            <label style={labelStyle}>Contraseña</label>
+            <input type="password" required minLength={6} value={password} onChange={(e) => setPassword(e.target.value)} autoComplete="new-password" />
+            <p style={{ fontSize: '0.75rem', color: 'var(--fg-faint)', marginTop: '0.375rem' }}>Mínimo 6 caracteres</p>
           </div>
 
           {error && (
-            <div style={{
-              background: '#3a0a0a',
-              color: '#f87171',
-              padding: '0.75rem 1rem',
-              borderRadius: '8px',
-              marginBottom: '1rem',
-              fontSize: '0.875rem',
-            }}>
-              {error}
-            </div>
+            <div style={errorBoxStyle}>{error}</div>
           )}
 
-          <button
-            type="submit"
-            disabled={loading}
-            style={{
-              width: '100%',
-              background: '#fff',
-              color: '#000',
-              border: 'none',
-              padding: '1rem',
-              borderRadius: '8px',
-              fontSize: '1rem',
-              fontWeight: 500,
-              marginBottom: '1rem',
-            }}
-          >
+          <button type="submit" disabled={loading} style={primaryButtonStyle}>
             {loading ? 'Creando cuenta...' : 'Crear cuenta'}
           </button>
         </form>
 
-        <p style={{ textAlign: 'center', color: '#888', fontSize: '0.875rem' }}>
+        <p style={{
+          textAlign: 'center',
+          color: 'var(--fg-subtle)',
+          fontSize: '0.875rem',
+          marginTop: '1.5rem',
+        }}>
           ¿Ya tienes cuenta?{' '}
-          <Link href="/login" style={{ color: '#fff', textDecoration: 'underline' }}>
+          <Link href="/login" style={{
+            color: 'var(--accent-soft-fg)',
+            textDecoration: 'none',
+            fontWeight: 500,
+          }}>
             Inicia sesión
           </Link>
         </p>
@@ -202,3 +120,32 @@ export default function SignupForm() {
     </main>
   );
 }
+
+const labelStyle: React.CSSProperties = {
+  fontSize: '0.8125rem',
+  color: 'var(--fg-subtle)',
+  display: 'block',
+  marginBottom: '0.5rem',
+  fontWeight: 500,
+};
+
+const errorBoxStyle: React.CSSProperties = {
+  background: 'var(--danger-bg)',
+  color: 'var(--danger-fg)',
+  border: '0.5px solid var(--danger-border)',
+  padding: '0.75rem 1rem',
+  borderRadius: '8px',
+  marginBottom: '1rem',
+  fontSize: '0.875rem',
+};
+
+const primaryButtonStyle: React.CSSProperties = {
+  width: '100%',
+  background: 'var(--accent)',
+  color: 'var(--accent-fg)',
+  border: 'none',
+  padding: '0.875rem',
+  borderRadius: '8px',
+  fontSize: '0.9375rem',
+  fontWeight: 500,
+};

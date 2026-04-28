@@ -33,9 +33,8 @@ export default function StatusStep({ requestId, onAnother }: Props) {
     if (typeof window === 'undefined') return;
     const stored = localStorage.getItem(STORAGE_KEY);
     if (stored !== null) setNotificationsOn(stored === '1');
-
-    audioRef.current.accept = createTone(660, 0.15, 'sine');
-    audioRef.current.reject = createTone(220, 0.2, 'sine');
+    audioRef.current.accept = createTone(660, 0.15);
+    audioRef.current.reject = createTone(220, 0.2);
   }, []);
 
   useEffect(() => {
@@ -78,7 +77,6 @@ export default function StatusStep({ requestId, onAnother }: Props) {
           const next = payload.new as Request;
           const prevStatus = lastStatusRef.current;
           setRequest(next);
-
           if (prevStatus && prevStatus !== next.status) {
             handleStatusChange(prevStatus, next.status);
           }
@@ -96,7 +94,6 @@ export default function StatusStep({ requestId, onAnother }: Props) {
 
   const handleStatusChange = (_prev: string, next: string) => {
     if (!notificationsOn) return;
-
     if (next === 'accepted') {
       showToast('¡Tu canción fue aceptada!', 'success');
       playSound('accept');
@@ -118,9 +115,7 @@ export default function StatusStep({ requestId, onAnother }: Props) {
   };
 
   const playSound = (kind: 'accept' | 'reject') => {
-    try {
-      audioRef.current[kind]?.play().catch(() => {});
-    } catch {}
+    try { audioRef.current[kind]?.play().catch(() => {}); } catch {}
   };
 
   const vibrate = (pattern: number[]) => {
@@ -131,18 +126,22 @@ export default function StatusStep({ requestId, onAnother }: Props) {
 
   if (!request) {
     return (
-      <p style={{ textAlign: 'center', color: '#888', padding: '2rem' }}>
+      <p style={{
+        textAlign: 'center',
+        color: 'var(--fg-subtle)',
+        padding: '2rem',
+      }}>
         Cargando...
       </p>
     );
   }
 
   const statusConfig = {
-    pending:  { color: '#fbbf24', bg: '#3a2a00', label: 'Esperando respuesta del DJ' },
-    accepted: { color: '#34d399', bg: '#0a3320', label: '¡Aceptada! El DJ la pondrá pronto' },
-    rejected: { color: '#f87171', bg: '#3a0a0a', label: 'Rechazada' },
-    played:   { color: '#a78bfa', bg: '#1a0a3a', label: '¡Sonó!' },
-    expired:  { color: '#888',    bg: '#222',    label: 'Expiró' },
+    pending:  { color: 'var(--warning-fg)', bg: 'var(--warning-bg)', border: 'var(--warning-border)', label: 'Esperando respuesta del DJ' },
+    accepted: { color: 'var(--accent-soft-fg)', bg: 'var(--accent-soft)', border: 'var(--accent-border)', label: '¡Aceptada! El DJ la pondrá pronto' },
+    rejected: { color: 'var(--danger-fg)', bg: 'var(--danger-bg)', border: 'var(--danger-border)', label: 'Rechazada' },
+    played:   { color: 'var(--accent-soft-fg)', bg: 'var(--accent-soft)', border: 'var(--accent-border)', label: '¡Sonó!' },
+    expired:  { color: 'var(--fg-subtle)', bg: 'var(--bg-muted)', border: 'var(--border)', label: 'Expiró' },
   };
 
   const config = statusConfig[request.status];
@@ -157,9 +156,9 @@ export default function StatusStep({ requestId, onAnother }: Props) {
           right: '1rem',
           maxWidth: '480px',
           margin: '0 auto',
-          background: toast.type === 'success' ? '#0a3320' : toast.type === 'error' ? '#3a0a0a' : '#1a1a1a',
-          color: toast.type === 'success' ? '#34d399' : toast.type === 'error' ? '#f87171' : '#fff',
-          border: `1px solid ${toast.type === 'success' ? '#1a5a3a' : toast.type === 'error' ? '#5a1a1a' : '#333'}`,
+          background: toast.type === 'success' ? 'var(--accent-soft)' : toast.type === 'error' ? 'var(--danger-bg)' : 'var(--bg-subtle)',
+          color: toast.type === 'success' ? 'var(--accent-soft-fg)' : toast.type === 'error' ? 'var(--danger-fg)' : 'var(--fg)',
+          border: `0.5px solid ${toast.type === 'success' ? 'var(--accent-border)' : toast.type === 'error' ? 'var(--danger-border)' : 'var(--border)'}`,
           padding: '0.875rem 1rem',
           borderRadius: '12px',
           fontSize: '0.9375rem',
@@ -167,7 +166,7 @@ export default function StatusStep({ requestId, onAnother }: Props) {
           textAlign: 'center',
           zIndex: 1000,
           animation: 'slideDown 0.3s ease-out',
-          boxShadow: '0 4px 16px rgba(0,0,0,0.4)',
+          boxShadow: '0 4px 16px rgba(0,0,0,0.2)',
         }}>
           {toast.message}
         </div>
@@ -187,11 +186,10 @@ export default function StatusStep({ requestId, onAnother }: Props) {
       }}>
         <button
           onClick={() => setNotificationsOn(!notificationsOn)}
-          aria-label={notificationsOn ? 'Desactivar notificaciones' : 'Activar notificaciones'}
           style={{
             background: 'transparent',
-            border: '1px solid #333',
-            color: notificationsOn ? '#fff' : '#666',
+            border: '0.5px solid var(--border)',
+            color: notificationsOn ? 'var(--fg)' : 'var(--fg-faint)',
             padding: '0.375rem 0.75rem',
             borderRadius: '999px',
             fontSize: '0.75rem',
@@ -200,31 +198,57 @@ export default function StatusStep({ requestId, onAnother }: Props) {
             gap: '0.375rem',
           }}
         >
-          <span style={{ fontSize: '0.875rem' }}>{notificationsOn ? '🔔' : '🔕'}</span>
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            {notificationsOn ? (
+              <>
+                <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
+                <path d="M13.73 21a2 2 0 0 1-3.46 0" />
+              </>
+            ) : (
+              <>
+                <path d="M13.73 21a2 2 0 0 1-3.46 0" />
+                <path d="M18.63 13A17.89 17.89 0 0 1 18 8" />
+                <path d="M6.26 6.26A5.86 5.86 0 0 0 6 8c0 7-3 9-3 9h14" />
+                <path d="M18 8a6 6 0 0 0-9.33-5" />
+                <line x1="1" y1="1" x2="23" y2="23" />
+              </>
+            )}
+          </svg>
           {notificationsOn ? 'Notificaciones' : 'Silenciado'}
         </button>
       </div>
 
       <div style={{
-        background: '#1a1a1a',
-        padding: '1.5rem',
-        borderRadius: '12px',
+        background: 'var(--bg-subtle)',
+        border: '0.5px solid var(--border-subtle)',
+        padding: '2rem 1.5rem',
+        borderRadius: '14px',
         textAlign: 'center',
-        marginBottom: '1.5rem',
+        marginBottom: '1rem',
       }}>
         <div style={{
-          width: '120px',
-          height: '120px',
-          background: '#2a2a2a',
-          borderRadius: '8px',
-          margin: '0 auto 1rem',
+          width: '140px',
+          height: '140px',
+          background: 'var(--bg-muted)',
+          borderRadius: '12px',
+          margin: '0 auto 1.25rem',
           backgroundImage: request.album_art_url ? `url(${request.album_art_url})` : undefined,
           backgroundSize: 'cover',
+          backgroundPosition: 'center',
         }} />
-        <p style={{ fontSize: '1.125rem', fontWeight: 500, marginBottom: '0.25rem' }}>
+        <p style={{
+          fontSize: '1.25rem',
+          fontWeight: 500,
+          marginBottom: '0.25rem',
+          letterSpacing: '-0.02em',
+        }}>
           {request.title}
         </p>
-        <p style={{ color: '#888', fontSize: '0.875rem', marginBottom: '1.5rem' }}>
+        <p style={{
+          color: 'var(--fg-subtle)',
+          fontSize: '0.9375rem',
+          marginBottom: '1.5rem',
+        }}>
           {request.artist}
         </p>
 
@@ -232,6 +256,7 @@ export default function StatusStep({ requestId, onAnother }: Props) {
           display: 'inline-block',
           background: config.bg,
           color: config.color,
+          border: `0.5px solid ${config.border}`,
           padding: '0.5rem 1rem',
           borderRadius: '999px',
           fontSize: '0.875rem',
@@ -241,7 +266,11 @@ export default function StatusStep({ requestId, onAnother }: Props) {
         </div>
 
         {request.status === 'rejected' && request.rejection_reason && (
-          <p style={{ color: '#888', fontSize: '0.8125rem', marginTop: '0.75rem' }}>
+          <p style={{
+            color: 'var(--fg-subtle)',
+            fontSize: '0.8125rem',
+            marginTop: '0.875rem',
+          }}>
             {request.rejection_reason}
           </p>
         )}
@@ -252,12 +281,12 @@ export default function StatusStep({ requestId, onAnother }: Props) {
           onClick={onAnother}
           style={{
             width: '100%',
-            background: '#fff',
-            color: '#000',
+            background: 'var(--accent)',
+            color: 'var(--accent-fg)',
             border: 'none',
-            padding: '1rem',
-            borderRadius: '8px',
-            fontSize: '1rem',
+            padding: '0.875rem',
+            borderRadius: '10px',
+            fontSize: '0.9375rem',
             fontWeight: 500,
           }}
         >
@@ -268,7 +297,7 @@ export default function StatusStep({ requestId, onAnother }: Props) {
   );
 }
 
-function createTone(frequency: number, duration: number, type: OscillatorType): HTMLAudioElement | null {
+function createTone(frequency: number, duration: number): HTMLAudioElement | null {
   if (typeof window === 'undefined') return null;
   try {
     const ctx = new (window.AudioContext || (window as any).webkitAudioContext)();
@@ -280,10 +309,7 @@ function createTone(frequency: number, duration: number, type: OscillatorType): 
     for (let i = 0; i < length; i++) {
       const t = i / sampleRate;
       const fade = Math.min(1, (length - i) / (sampleRate * 0.05));
-      let sample = 0;
-      if (type === 'sine') sample = Math.sin(2 * Math.PI * frequency * t);
-      else if (type === 'square') sample = Math.sign(Math.sin(2 * Math.PI * frequency * t));
-      data[i] = sample * 0.3 * fade;
+      data[i] = Math.sin(2 * Math.PI * frequency * t) * 0.3 * fade;
     }
 
     const offlineCtx = new OfflineAudioContext(1, length, sampleRate);

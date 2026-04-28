@@ -1,26 +1,154 @@
+@import url('https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&display=swap');
+
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
 
-html, body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  background: #0a0a0a;
-  color: #fff;
-  min-height: 100vh;
+:root {
+  --font-sans: 'Geist', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-mono: 'Geist Mono', ui-monospace, monospace;
+
+  --accent: #6D28D9;
+  --accent-hover: #5b21b6;
+  --accent-fg: #ffffff;
+  --accent-soft: #ede9fe;
+  --accent-soft-fg: #5b21b6;
+  --accent-border: #d8b4fe;
+  --accent-bg: #faf5ff;
+}
+
+[data-theme='light'] {
+  --bg: #ffffff;
+  --bg-subtle: #fafaf9;
+  --bg-muted: #f4f4f5;
+  --bg-elevated: #ffffff;
+
+  --fg: #09090b;
+  --fg-muted: #3f3f46;
+  --fg-subtle: #52525b;
+  --fg-faint: #71717a;
+
+  --border: #d4d4d8;
+  --border-strong: #a1a1aa;
+  --border-subtle: #e4e4e7;
+
+  --success-bg: #ecfdf5;
+  --success-fg: #047857;
+  --success-border: #6ee7b7;
+
+  --warning-bg: #fffbeb;
+  --warning-fg: #b45309;
+  --warning-border: #fcd34d;
+
+  --danger-bg: #fef2f2;
+  --danger-fg: #b91c1c;
+  --danger-border: #fca5a5;
+
+  color-scheme: light;
+}
+
+[data-theme='dark'] {
+  --bg: #0a0a0a;
+  --bg-subtle: #0f0f0f;
+  --bg-muted: #141414;
+  --bg-elevated: #141414;
+
+  --fg: #fafafa;
+  --fg-muted: #d4d4d8;
+  --fg-subtle: #a1a1aa;
+  --fg-faint: #71717a;
+
+  --border: #1f1f1f;
+  --border-strong: #2a2a2a;
+  --border-subtle: #1a1a1a;
+
+  --accent: #7C3AED;
+  --accent-hover: #6D28D9;
+  --accent-fg: #ffffff;
+  --accent-soft: #1a0a3a;
+  --accent-soft-fg: #A78BFA;
+  --accent-border: #2a1a4a;
+  --accent-bg: #0f0a1f;
+
+  --success-bg: #022c22;
+  --success-fg: #34d399;
+  --success-border: #064e3b;
+
+  --warning-bg: #2a1a00;
+  --warning-fg: #fbbf24;
+  --warning-border: #5a3a00;
+
+  --danger-bg: #2a0a0a;
+  --danger-fg: #f87171;
+  --danger-border: #5a1a1a;
+
+  color-scheme: dark;
+}
+
+html {
+  font-family: var(--font-sans);
+  background: var(--bg);
+  color: var(--fg);
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-feature-settings: "cv11", "ss01";
+}
+
+body {
+  background: var(--bg);
+  color: var(--fg);
+  min-height: 100vh;
+  font-feature-settings: "cv11", "ss01";
+  letter-spacing: -0.01em;
+}
+
+button, input, textarea, select {
+  font-family: inherit;
+  letter-spacing: inherit;
 }
 
 button {
-  font-family: inherit;
   cursor: pointer;
+  transition: background-color 0.15s ease, border-color 0.15s ease, opacity 0.15s ease, transform 0.05s ease;
 }
 
-input {
-  font-family: inherit;
+button:active:not(:disabled) {
+  transform: scale(0.98);
+}
+
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 a {
   color: inherit;
+  transition: opacity 0.15s ease;
+}
+
+input::placeholder, textarea::placeholder {
+  color: var(--fg-faint);
+}
+
+input[type="text"], input[type="email"], input[type="password"], textarea, input[type="search"] {
+  background: var(--bg-muted);
+  color: var(--fg);
+  border: 0.5px solid var(--border);
+  border-radius: 8px;
+  padding: 0.75rem 0.875rem;
+  font-size: 0.9375rem;
+  width: 100%;
+  outline: none;
+  transition: border-color 0.15s ease;
+}
+
+input[type="text"]:focus, input[type="email"]:focus, input[type="password"]:focus, textarea:focus, input[type="search"]:focus {
+  border-color: var(--accent);
+}
+
+::selection {
+  background: var(--accent);
+  color: var(--accent-fg);
 }

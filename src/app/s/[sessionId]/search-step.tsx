@@ -60,6 +60,7 @@ export default function SearchStep({ sessionId, onRequested }: Props) {
           artist: track.artist,
           album_art_url: track.albumArtUrl,
           duration_ms: track.durationMs,
+          explicit: track.explicit,
         }),
       });
       const data = await res.json();
@@ -68,7 +69,7 @@ export default function SearchStep({ sessionId, onRequested }: Props) {
         return;
       }
       onRequested(data.id);
-    } catch (e) {
+    } catch {
       setError('No se pudo conectar');
     } finally {
       setRequesting(null);
@@ -78,27 +79,19 @@ export default function SearchStep({ sessionId, onRequested }: Props) {
   return (
     <div>
       <input
-        type="text"
+        type="search"
         placeholder="Buscar canción o artista"
         value={query}
         onChange={(e) => setQuery(e.target.value)}
         autoFocus
-        style={{
-          width: '100%',
-          background: '#1a1a1a',
-          color: '#fff',
-          border: '1px solid #333',
-          padding: '0.875rem 1rem',
-          borderRadius: '8px',
-          fontSize: '1rem',
-          marginBottom: '1rem',
-        }}
+        style={{ marginBottom: '1rem' }}
       />
 
       {error && (
         <div style={{
-          background: '#3a0a0a',
-          color: '#f87171',
+          background: 'var(--danger-bg)',
+          color: 'var(--danger-fg)',
+          border: '0.5px solid var(--danger-border)',
           padding: '0.75rem 1rem',
           borderRadius: '8px',
           marginBottom: '1rem',
@@ -109,11 +102,23 @@ export default function SearchStep({ sessionId, onRequested }: Props) {
       )}
 
       {loading && (
-        <p style={{ color: '#888', textAlign: 'center', padding: '1rem' }}>Buscando...</p>
+        <p style={{
+          color: 'var(--fg-subtle)',
+          textAlign: 'center',
+          padding: '1rem',
+          fontSize: '0.875rem',
+        }}>
+          Buscando...
+        </p>
       )}
 
       {!loading && tracks.length === 0 && query && (
-        <p style={{ color: '#888', textAlign: 'center', padding: '1rem' }}>
+        <p style={{
+          color: 'var(--fg-subtle)',
+          textAlign: 'center',
+          padding: '1.5rem',
+          fontSize: '0.875rem',
+        }}>
           No se encontraron resultados
         </p>
       )}
@@ -128,23 +133,25 @@ export default function SearchStep({ sessionId, onRequested }: Props) {
               display: 'flex',
               alignItems: 'center',
               gap: '0.75rem',
-              background: requesting === track.id ? '#222' : '#1a1a1a',
-              border: '1px solid #2a2a2a',
-              padding: '0.75rem',
-              borderRadius: '8px',
+              background: requesting === track.id ? 'var(--accent-bg)' : 'var(--bg-subtle)',
+              border: `0.5px solid ${requesting === track.id ? 'var(--accent-border)' : 'var(--border-subtle)'}`,
+              padding: '0.625rem 0.75rem',
+              borderRadius: '10px',
               textAlign: 'left',
-              color: '#fff',
+              color: 'var(--fg)',
               opacity: requesting !== null && requesting !== track.id ? 0.5 : 1,
+              transition: 'all 0.15s ease',
             }}
           >
             <div style={{
-              width: '48px',
-              height: '48px',
-              background: '#2a2a2a',
-              borderRadius: '4px',
+              width: '44px',
+              height: '44px',
+              background: 'var(--bg-muted)',
+              borderRadius: '6px',
               flexShrink: 0,
               backgroundImage: track.albumArtUrl ? `url(${track.albumArtUrl})` : undefined,
               backgroundSize: 'cover',
+              backgroundPosition: 'center',
             }} />
             <div style={{ flex: 1, minWidth: 0 }}>
               <p style={{
@@ -153,12 +160,13 @@ export default function SearchStep({ sessionId, onRequested }: Props) {
                 whiteSpace: 'nowrap',
                 overflow: 'hidden',
                 textOverflow: 'ellipsis',
+                letterSpacing: '-0.01em',
               }}>
                 {track.title}
               </p>
               <p style={{
                 fontSize: '0.8125rem',
-                color: '#888',
+                color: 'var(--fg-subtle)',
                 whiteSpace: 'nowrap',
                 overflow: 'hidden',
                 textOverflow: 'ellipsis',
@@ -167,7 +175,13 @@ export default function SearchStep({ sessionId, onRequested }: Props) {
               </p>
             </div>
             {requesting === track.id && (
-              <span style={{ fontSize: '0.75rem', color: '#888' }}>Pidiendo...</span>
+              <span style={{
+                fontSize: '0.75rem',
+                color: 'var(--accent-soft-fg)',
+                fontWeight: 500,
+              }}>
+                Pidiendo...
+              </span>
             )}
           </button>
         ))}

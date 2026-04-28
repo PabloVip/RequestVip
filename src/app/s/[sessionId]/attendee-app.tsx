@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import VerifyStep from './verify-step';
 import SearchStep from './search-step';
 import StatusStep from './status-step';
+import ThemeToggle from '@/components/theme-toggle';
 
 interface Props {
   sessionId: string;
@@ -36,24 +37,48 @@ export default function AttendeeApp(props: Props) {
       margin: '0 auto',
       padding: '1.5rem',
     }}>
+      <div style={{
+        display: 'flex',
+        justifyContent: 'flex-end',
+        marginBottom: '1rem',
+      }}>
+        <ThemeToggle />
+      </div>
+
       <header style={{ marginBottom: '2rem', textAlign: 'center' }}>
-        <p style={{ fontSize: '0.75rem', color: '#666', letterSpacing: '0.1em', textTransform: 'uppercase' }}>
+        <p style={{
+          fontSize: '0.6875rem',
+          color: 'var(--fg-subtle)',
+          letterSpacing: '0.12em',
+          textTransform: 'uppercase',
+          fontWeight: 500,
+        }}>
           {props.venue ?? 'En vivo'}
         </p>
-        <h1 style={{ fontSize: '1.75rem', fontWeight: 600, marginTop: '0.25rem' }}>
+        <h1 style={{
+          fontSize: '1.75rem',
+          fontWeight: 500,
+          marginTop: '0.5rem',
+          letterSpacing: '-0.025em',
+        }}>
           {props.djName}
         </h1>
-        <p style={{ color: '#888', fontSize: '0.875rem', marginTop: '0.25rem' }}>
+        <p style={{
+          color: 'var(--fg-subtle)',
+          fontSize: '0.875rem',
+          marginTop: '0.25rem',
+        }}>
           @{props.djInstagram}
         </p>
       </header>
 
       {!props.accepting && (
         <div style={{
-          background: '#3a2a00',
-          color: '#fbbf24',
+          background: 'var(--warning-bg)',
+          color: 'var(--warning-fg)',
+          border: '0.5px solid var(--warning-border)',
           padding: '0.75rem 1rem',
-          borderRadius: '8px',
+          borderRadius: '10px',
           marginBottom: '1.5rem',
           fontSize: '0.875rem',
           textAlign: 'center',

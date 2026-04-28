@@ -1,6 +1,7 @@
 import { redirect } from 'next/navigation';
 import Link from 'next/link';
 import { createUserClient, createServiceClient } from '@/lib/supabase-server';
+import ThemeToggle from '@/components/theme-toggle';
 
 export default async function SessionsPage() {
   const supabase = await createUserClient();
@@ -54,58 +55,89 @@ export default async function SessionsPage() {
   return (
     <main style={{
       minHeight: '100vh',
-      maxWidth: '700px',
+      maxWidth: '720px',
       margin: '0 auto',
-      padding: '1.5rem',
+      padding: '2rem 1.5rem',
     }}>
-      <Link
-        href="/admin"
-        style={{ color: '#888', fontSize: '0.875rem', textDecoration: 'none', marginBottom: '1.5rem', display: 'inline-block' }}
-      >
-        ← Volver
-      </Link>
+      <div style={{
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        marginBottom: '1.5rem',
+      }}>
+        <Link href="/admin" style={{
+          color: 'var(--fg-subtle)',
+          fontSize: '0.875rem',
+          textDecoration: 'none',
+        }}>
+          ← Volver
+        </Link>
+        <ThemeToggle />
+      </div>
 
-      <h1 style={{ fontSize: '1.75rem', fontWeight: 600, marginBottom: '0.5rem' }}>
+      <h1 style={{
+        fontSize: '1.75rem',
+        fontWeight: 500,
+        letterSpacing: '-0.025em',
+        marginBottom: '0.5rem',
+      }}>
         Historial de sesiones
       </h1>
-      <p style={{ color: '#888', fontSize: '0.9375rem', marginBottom: '2rem' }}>
+      <p style={{
+        color: 'var(--fg-subtle)',
+        fontSize: '0.9375rem',
+        marginBottom: '2rem',
+      }}>
         Todas las sesiones que has realizado.
       </p>
 
       {sessionsWithStats.length === 0 && (
         <div style={{
-          background: '#1a1a1a',
-          border: '1px solid #2a2a2a',
+          background: 'var(--bg-subtle)',
+          border: '0.5px solid var(--border-subtle)',
           padding: '2rem',
           borderRadius: '12px',
           textAlign: 'center',
-          color: '#888',
+          color: 'var(--fg-subtle)',
         }}>
           Aún no tienes sesiones. Crea una desde el panel principal.
         </div>
       )}
 
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.625rem' }}>
         {sessionsWithStats.map(session => (
           <Link
             key={session.id}
             href={`/admin/sessions/${session.id}`}
             style={{
-              background: '#1a1a1a',
-              border: '1px solid #2a2a2a',
+              background: 'var(--bg-subtle)',
+              border: '0.5px solid var(--border-subtle)',
               padding: '1rem 1.25rem',
-              borderRadius: '10px',
+              borderRadius: '12px',
               textDecoration: 'none',
-              color: '#fff',
+              color: 'var(--fg)',
               display: 'block',
+              transition: 'border-color 0.15s ease',
             }}
           >
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+            <div style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'flex-start',
+            }}>
               <div style={{ flex: 1, minWidth: 0 }}>
-                <p style={{ fontSize: '1rem', fontWeight: 500, marginBottom: '0.25rem' }}>
+                <p style={{
+                  fontSize: '1rem',
+                  fontWeight: 500,
+                  marginBottom: '0.25rem',
+                  letterSpacing: '-0.01em',
+                }}>
                   {session.venue ?? 'Sesión sin nombre'}
                 </p>
-                <p style={{ fontSize: '0.8125rem', color: '#888' }}>
+                <p style={{
+                  fontSize: '0.8125rem',
+                  color: 'var(--fg-subtle)',
+                }}>
                   {new Date(session.started_at).toLocaleString('es-ES', {
                     day: 'numeric',
                     month: 'short',
@@ -117,12 +149,14 @@ export default async function SessionsPage() {
               </div>
               <span style={{
                 fontSize: '0.6875rem',
-                color: session.status === 'active' ? '#34d399' : '#666',
-                background: session.status === 'active' ? '#0a3320' : '#222',
+                color: session.status === 'active' ? 'var(--accent-soft-fg)' : 'var(--fg-subtle)',
+                background: session.status === 'active' ? 'var(--accent-soft)' : 'var(--bg-muted)',
+                border: `0.5px solid ${session.status === 'active' ? 'var(--accent-border)' : 'var(--border)'}`,
                 padding: '0.25rem 0.625rem',
                 borderRadius: '999px',
                 marginLeft: '0.5rem',
                 whiteSpace: 'nowrap',
+                fontWeight: 500,
               }}>
                 {session.status === 'active' ? 'En vivo' : 'Terminada'}
               </span>
@@ -133,12 +167,20 @@ export default async function SessionsPage() {
               gap: '1.5rem',
               marginTop: '0.75rem',
               fontSize: '0.8125rem',
-              color: '#888',
+              color: 'var(--fg-subtle)',
             }}>
-              <span><strong style={{ color: '#fff' }}>{session.total}</strong> peticiones</span>
-              <span><strong style={{ color: '#fff' }}>{session.accepted}</strong> aceptadas</span>
+              <span>
+                <strong style={{ color: 'var(--fg)', fontWeight: 500 }}>{session.total}</strong>{' '}
+                peticiones
+              </span>
+              <span>
+                <strong style={{ color: 'var(--fg)', fontWeight: 500 }}>{session.accepted}</strong>{' '}
+                aceptadas
+              </span>
               {session.total > 0 && (
-                <span>{Math.round((session.accepted / session.total) * 100)}% aceptación</span>
+                <span>
+                  {Math.round((session.accepted / session.total) * 100)}% aceptación
+                </span>
               )}
             </div>
           </Link>

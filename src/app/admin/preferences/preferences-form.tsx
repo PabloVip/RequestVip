@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase-browser';
+import ThemeToggle from '@/components/theme-toggle';
 
 interface Preferences {
   blacklistTerms: string[];
@@ -81,25 +82,43 @@ export default function PreferencesForm({ djId, initial }: Props) {
       minHeight: '100vh',
       maxWidth: '600px',
       margin: '0 auto',
-      padding: '1.5rem',
+      padding: '2rem 1.5rem',
     }}>
-      <Link
-        href="/admin"
-        style={{ color: '#888', fontSize: '0.875rem', textDecoration: 'none', marginBottom: '1.5rem', display: 'inline-block' }}
-      >
-        ← Volver
-      </Link>
+      <div style={{
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        marginBottom: '1.5rem',
+      }}>
+        <Link href="/admin" style={{
+          color: 'var(--fg-subtle)',
+          fontSize: '0.875rem',
+          textDecoration: 'none',
+        }}>
+          ← Volver
+        </Link>
+        <ThemeToggle />
+      </div>
 
-      <h1 style={{ fontSize: '1.75rem', fontWeight: 600, marginBottom: '0.5rem' }}>
+      <h1 style={{
+        fontSize: '1.75rem',
+        fontWeight: 500,
+        letterSpacing: '-0.025em',
+        marginBottom: '0.5rem',
+      }}>
         Preferencias
       </h1>
-      <p style={{ color: '#888', fontSize: '0.9375rem', marginBottom: '2rem' }}>
+      <p style={{
+        color: 'var(--fg-subtle)',
+        fontSize: '0.9375rem',
+        marginBottom: '2rem',
+      }}>
         Controla qué peticiones aceptas y cómo se comporta tu app.
       </p>
 
       <form onSubmit={handleSave}>
 
-        <Section title="Blacklist" subtitle="Artistas o palabras que se rechazan automáticamente. Útil si pinchas un género específico esa noche.">
+        <Section title="Blacklist" subtitle="Artistas o palabras que se rechazan automáticamente.">
           <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '0.75rem' }}>
             <input
               type="text"
@@ -112,18 +131,19 @@ export default function PreferencesForm({ djId, initial }: Props) {
                   addTerm();
                 }
               }}
-              style={inputStyle}
+              style={{ flex: 1 }}
             />
             <button
               type="button"
               onClick={addTerm}
               style={{
-                background: '#1a1a1a',
-                color: '#fff',
-                border: '1px solid #333',
+                background: 'var(--bg-muted)',
+                color: 'var(--fg)',
+                border: '0.5px solid var(--border)',
                 padding: '0 1rem',
                 borderRadius: '8px',
                 fontSize: '0.875rem',
+                fontWeight: 500,
               }}
             >
               Añadir
@@ -136,9 +156,9 @@ export default function PreferencesForm({ djId, initial }: Props) {
                 <span
                   key={term}
                   style={{
-                    background: '#3a0a0a',
-                    color: '#f87171',
-                    border: '1px solid #5a1a1a',
+                    background: 'var(--danger-bg)',
+                    color: 'var(--danger-fg)',
+                    border: '0.5px solid var(--danger-border)',
                     padding: '0.375rem 0.75rem',
                     borderRadius: '999px',
                     fontSize: '0.8125rem',
@@ -154,8 +174,7 @@ export default function PreferencesForm({ djId, initial }: Props) {
                     style={{
                       background: 'transparent',
                       border: 'none',
-                      color: '#f87171',
-                      cursor: 'pointer',
+                      color: 'var(--danger-fg)',
                       fontSize: '1rem',
                       lineHeight: 1,
                       padding: 0,
@@ -191,23 +210,23 @@ export default function PreferencesForm({ djId, initial }: Props) {
             placeholder="ej. Esta noche techno y deep house"
             maxLength={120}
             rows={2}
-            style={{ ...inputStyle, marginBottom: '1rem', resize: 'vertical', fontFamily: 'inherit' }}
+            style={{ marginBottom: '1rem', resize: 'vertical' }}
           />
 
-          <label style={labelStyle}>Mensaje de rechazo por defecto (opcional)</label>
+          <label style={labelStyle}>Mensaje de rechazo por defecto</label>
           <textarea
             value={prefs.defaultRejectionMsg}
             onChange={(e) => setPrefs({ ...prefs, defaultRejectionMsg: e.target.value })}
             placeholder="ej. No encaja con el set de hoy"
             maxLength={120}
             rows={2}
-            style={{ ...inputStyle, resize: 'vertical', fontFamily: 'inherit' }}
+            style={{ resize: 'vertical' }}
           />
         </Section>
 
-        <Section title="Limites por usuario">
+        <Section title="Límites por usuario">
           <label style={labelStyle}>
-            Espera entre peticiones: <strong style={{ color: '#fff' }}>{Math.round(prefs.cooldownSeconds / 60)} min</strong>
+            Espera entre peticiones: <strong style={{ color: 'var(--fg)' }}>{Math.round(prefs.cooldownSeconds / 60)} min</strong>
           </label>
           <input
             type="range"
@@ -216,11 +235,11 @@ export default function PreferencesForm({ djId, initial }: Props) {
             step={60}
             value={prefs.cooldownSeconds}
             onChange={(e) => setPrefs({ ...prefs, cooldownSeconds: Number(e.target.value) })}
-            style={{ width: '100%', marginBottom: '1rem' }}
+            style={{ width: '100%', marginBottom: '1rem', accentColor: 'var(--accent)' }}
           />
 
           <label style={labelStyle}>
-            Máximo de peticiones por persona en la sesión: <strong style={{ color: '#fff' }}>{prefs.maxRequestsPerUser}</strong>
+            Máximo de peticiones por sesión: <strong style={{ color: 'var(--fg)' }}>{prefs.maxRequestsPerUser}</strong>
           </label>
           <input
             type="range"
@@ -229,14 +248,15 @@ export default function PreferencesForm({ djId, initial }: Props) {
             step={1}
             value={prefs.maxRequestsPerUser}
             onChange={(e) => setPrefs({ ...prefs, maxRequestsPerUser: Number(e.target.value) })}
-            style={{ width: '100%' }}
+            style={{ width: '100%', accentColor: 'var(--accent)' }}
           />
         </Section>
 
         {error && (
           <div style={{
-            background: '#3a0a0a',
-            color: '#f87171',
+            background: 'var(--danger-bg)',
+            color: 'var(--danger-fg)',
+            border: '0.5px solid var(--danger-border)',
             padding: '0.75rem 1rem',
             borderRadius: '8px',
             marginBottom: '1rem',
@@ -248,8 +268,9 @@ export default function PreferencesForm({ djId, initial }: Props) {
 
         {success && (
           <div style={{
-            background: '#0a3320',
-            color: '#34d399',
+            background: 'var(--accent-soft)',
+            color: 'var(--accent-soft-fg)',
+            border: '0.5px solid var(--accent-border)',
             padding: '0.75rem 1rem',
             borderRadius: '8px',
             marginBottom: '1rem',
@@ -259,20 +280,16 @@ export default function PreferencesForm({ djId, initial }: Props) {
           </div>
         )}
 
-        <button
-          type="submit"
-          disabled={saving}
-          style={{
-            width: '100%',
-            background: '#fff',
-            color: '#000',
-            border: 'none',
-            padding: '1rem',
-            borderRadius: '8px',
-            fontSize: '1rem',
-            fontWeight: 500,
-          }}
-        >
+        <button type="submit" disabled={saving} style={{
+          width: '100%',
+          background: 'var(--accent)',
+          color: 'var(--accent-fg)',
+          border: 'none',
+          padding: '0.875rem',
+          borderRadius: '8px',
+          fontSize: '0.9375rem',
+          fontWeight: 500,
+        }}>
           {saving ? 'Guardando...' : 'Guardar cambios'}
         </button>
       </form>
@@ -280,61 +297,46 @@ export default function PreferencesForm({ djId, initial }: Props) {
   );
 }
 
-const inputStyle: React.CSSProperties = {
-  width: '100%',
-  background: '#0a0a0a',
-  color: '#fff',
-  border: '1px solid #333',
-  padding: '0.75rem 1rem',
-  borderRadius: '8px',
-  fontSize: '0.9375rem',
-  boxSizing: 'border-box',
-};
-
 const labelStyle: React.CSSProperties = {
-  fontSize: '0.875rem',
-  color: '#aaa',
+  fontSize: '0.8125rem',
+  color: 'var(--fg-subtle)',
   display: 'block',
   marginBottom: '0.5rem',
+  fontWeight: 500,
 };
 
-function Section({
-  title,
-  subtitle,
-  children,
-}: {
-  title: string;
-  subtitle?: string;
-  children: React.ReactNode;
-}) {
+function Section({ title, subtitle, children }: { title: string; subtitle?: string; children: React.ReactNode }) {
   return (
     <section style={{
-      background: '#1a1a1a',
-      border: '1px solid #2a2a2a',
+      background: 'var(--bg-subtle)',
+      border: '0.5px solid var(--border-subtle)',
       padding: '1.25rem',
       borderRadius: '12px',
       marginBottom: '1rem',
     }}>
-      <h2 style={{ fontSize: '1rem', fontWeight: 500, marginBottom: subtitle ? '0.25rem' : '0.75rem' }}>
+      <h2 style={{
+        fontSize: '1rem',
+        fontWeight: 500,
+        marginBottom: subtitle ? '0.25rem' : '0.875rem',
+        letterSpacing: '-0.01em',
+      }}>
         {title}
       </h2>
       {subtitle && (
-        <p style={{ color: '#888', fontSize: '0.8125rem', marginBottom: '1rem' }}>{subtitle}</p>
+        <p style={{
+          color: 'var(--fg-subtle)',
+          fontSize: '0.8125rem',
+          marginBottom: '1rem',
+        }}>
+          {subtitle}
+        </p>
       )}
       {children}
     </section>
   );
 }
 
-function Toggle({
-  label,
-  checked,
-  onChange,
-}: {
-  label: string;
-  checked: boolean;
-  onChange: (v: boolean) => void;
-}) {
+function Toggle({ label, checked, onChange }: { label: string; checked: boolean; onChange: (v: boolean) => void }) {
   return (
     <label style={{
       display: 'flex',
@@ -350,7 +352,7 @@ function Toggle({
         style={{
           width: '20px',
           height: '20px',
-          accentColor: '#34d399',
+          accentColor: 'var(--accent)',
           cursor: 'pointer',
         }}
       />
