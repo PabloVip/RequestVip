@@ -19,7 +19,12 @@ export async function createUserClient() {
       cookies: {
         getAll: () => cookieStore.getAll(),
         setAll: (toSet: { name: string; value: string; options: CookieOptions }[]) => {
-          for (const c of toSet) cookieStore.set(c);
+          try {
+            for (const c of toSet) cookieStore.set(c);
+          } catch {
+            // En Server Components Next.js no permite escribir cookies.
+            // Ignoramos el error porque el middleware ya las refresca.
+          }
         },
       },
     }
