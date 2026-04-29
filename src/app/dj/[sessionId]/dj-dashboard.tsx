@@ -31,51 +31,62 @@ export default function DjDashboard({ sessionId, djName, venue }: Props) {
       minHeight: '100vh',
       maxWidth: '900px',
       margin: '0 auto',
-      padding: '2rem 1.5rem',
+      padding: '1.5rem 1rem',
     }}>
       <header style={{
         display: 'flex',
         justifyContent: 'space-between',
         alignItems: 'center',
         marginBottom: '1.5rem',
+        gap: '0.5rem',
       }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', minWidth: 0, flex: 1 }}>
           <Link href="/admin" style={{
             color: 'var(--fg-subtle)',
-            fontSize: '0.875rem',
+            fontSize: '1rem',
             textDecoration: 'none',
+            flexShrink: 0,
           }}>
             ←
           </Link>
-          <div>
+          <div style={{ minWidth: 0, flex: 1 }}>
             <h1 style={{
-              fontSize: '1.375rem',
+              fontSize: 'clamp(1.125rem, 4.5vw, 1.375rem)',
               fontWeight: 500,
               letterSpacing: '-0.02em',
+              whiteSpace: 'nowrap',
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
             }}>
               {djName}
             </h1>
-            <p style={{ color: 'var(--fg-subtle)', fontSize: '0.8125rem' }}>
+            <p style={{
+              color: 'var(--fg-subtle)',
+              fontSize: '0.75rem',
+              whiteSpace: 'nowrap',
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+            }}>
               {venue ?? 'Sesión activa'}
             </p>
           </div>
         </div>
-        <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+        <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', flexShrink: 0 }}>
           <span style={{
             display: 'inline-flex',
             alignItems: 'center',
             gap: '0.375rem',
             background: 'var(--accent-soft)',
             color: 'var(--accent-soft-fg)',
-            padding: '0.375rem 0.75rem',
+            padding: '0.375rem 0.625rem',
             borderRadius: '999px',
-            fontSize: '0.75rem',
+            fontSize: '0.6875rem',
             fontWeight: 500,
             border: '0.5px solid var(--accent-border)',
           }}>
             <span style={{
-              width: '6px',
-              height: '6px',
+              width: '5px',
+              height: '5px',
               background: 'var(--accent)',
               borderRadius: '50%',
             }} />
@@ -88,8 +99,8 @@ export default function DjDashboard({ sessionId, djName, venue }: Props) {
       <div style={{
         display: 'grid',
         gridTemplateColumns: 'repeat(3, 1fr)',
-        gap: '0.75rem',
-        marginBottom: '2rem',
+        gap: '0.5rem',
+        marginBottom: '1.5rem',
       }}>
         <Stat label="Pendientes" value={pending.length} />
         <Stat label="Aceptadas" value={accepted.length} />
@@ -97,11 +108,7 @@ export default function DjDashboard({ sessionId, djName, venue }: Props) {
       </div>
 
       {loading && (
-        <p style={{
-          color: 'var(--fg-subtle)',
-          textAlign: 'center',
-          padding: '2rem',
-        }}>
+        <p style={{ color: 'var(--fg-subtle)', textAlign: 'center', padding: '2rem' }}>
           Cargando...
         </p>
       )}
@@ -110,7 +117,7 @@ export default function DjDashboard({ sessionId, djName, venue }: Props) {
         <p style={{
           color: 'var(--fg-subtle)',
           textAlign: 'center',
-          padding: '2.5rem',
+          padding: '2rem 1rem',
           background: 'var(--bg-subtle)',
           border: '0.5px solid var(--border-subtle)',
           borderRadius: '12px',
@@ -121,7 +128,7 @@ export default function DjDashboard({ sessionId, djName, venue }: Props) {
       )}
 
       {pending.length > 0 && (
-        <section style={{ marginBottom: '2rem' }}>
+        <section style={{ marginBottom: '1.5rem' }}>
           <h2 style={sectionLabelStyle}>
             Peticiones nuevas ({pending.length})
           </h2>
@@ -140,18 +147,16 @@ export default function DjDashboard({ sessionId, djName, venue }: Props) {
 
       {accepted.length > 0 && (
         <section>
-          <h2 style={sectionLabelStyle}>
-            Cola ({accepted.length})
-          </h2>
+          <h2 style={sectionLabelStyle}>Cola ({accepted.length})</h2>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
             {accepted.map(req => (
               <div key={req.id} style={{
                 display: 'flex',
                 alignItems: 'center',
-                gap: '0.875rem',
+                gap: '0.75rem',
                 background: 'var(--accent-bg)',
                 border: '0.5px solid var(--accent-border)',
-                padding: '0.75rem 1rem',
+                padding: '0.75rem',
                 borderRadius: '10px',
               }}>
                 <Cover url={req.album_art_url} />
@@ -160,10 +165,19 @@ export default function DjDashboard({ sessionId, djName, venue }: Props) {
                     fontSize: '0.9375rem',
                     fontWeight: 500,
                     letterSpacing: '-0.01em',
+                    whiteSpace: 'nowrap',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
                   }}>
                     {req.title}
                   </p>
-                  <p style={{ fontSize: '0.8125rem', color: 'var(--fg-subtle)' }}>
+                  <p style={{
+                    fontSize: '0.75rem',
+                    color: 'var(--fg-subtle)',
+                    whiteSpace: 'nowrap',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                  }}>
                     {req.artist}
                     {req.bpm && ` · ${req.bpm} BPM`}
                   </p>
@@ -174,13 +188,14 @@ export default function DjDashboard({ sessionId, djName, venue }: Props) {
                     background: 'transparent',
                     color: 'var(--accent-soft-fg)',
                     border: '0.5px solid var(--accent-border)',
-                    padding: '0.5rem 0.875rem',
+                    padding: '0.5rem 0.75rem',
                     borderRadius: '8px',
-                    fontSize: '0.8125rem',
+                    fontSize: '0.75rem',
                     fontWeight: 500,
+                    flexShrink: 0,
                   }}
                 >
-                  Marcar sonada
+                  Sonada
                 </button>
               </div>
             ))}
@@ -205,12 +220,12 @@ function Stat({ label, value }: { label: string; value: number }) {
     <div style={{
       background: 'var(--bg-subtle)',
       border: '0.5px solid var(--border-subtle)',
-      padding: '0.875rem 1rem',
+      padding: '0.75rem',
       borderRadius: '10px',
     }}>
-      <p style={{ fontSize: '0.75rem', color: 'var(--fg-subtle)' }}>{label}</p>
+      <p style={{ fontSize: '0.6875rem', color: 'var(--fg-subtle)' }}>{label}</p>
       <p style={{
-        fontSize: '1.625rem',
+        fontSize: 'clamp(1.25rem, 5vw, 1.625rem)',
         fontWeight: 500,
         marginTop: '0.25rem',
         letterSpacing: '-0.02em',
@@ -254,44 +269,56 @@ function RequestCard({ request, onAccept, onReject }: RequestCardProps) {
   const ago = timeAgo(request.created_at);
   return (
     <div style={{
-      display: 'flex',
-      alignItems: 'center',
-      gap: '0.875rem',
       background: 'var(--bg-subtle)',
       border: '0.5px solid var(--border-subtle)',
-      padding: '0.875rem 1rem',
+      padding: '0.875rem',
       borderRadius: '10px',
+      display: 'flex',
+      flexDirection: 'column',
+      gap: '0.625rem',
     }}>
-      <Cover url={request.album_art_url} />
-      <div style={{ flex: 1, minWidth: 0 }}>
-        <p style={{
-          fontSize: '0.9375rem',
-          fontWeight: 500,
-          letterSpacing: '-0.01em',
-        }}>
-          {request.title}
-        </p>
-        <p style={{ fontSize: '0.8125rem', color: 'var(--fg-subtle)' }}>
-          {request.artist}
-          {request.bpm && ` · ${request.bpm} BPM`}
-          {request.key_signature && ` · ${request.key_signature}`}
-        </p>
-        <p style={{
-          fontSize: '0.6875rem',
-          color: 'var(--fg-faint)',
-          marginTop: '0.125rem',
-        }}>
-          {ago}
-        </p>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+        <Cover url={request.album_art_url} />
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <p style={{
+            fontSize: '0.9375rem',
+            fontWeight: 500,
+            letterSpacing: '-0.01em',
+            whiteSpace: 'nowrap',
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+          }}>
+            {request.title}
+          </p>
+          <p style={{
+            fontSize: '0.75rem',
+            color: 'var(--fg-subtle)',
+            whiteSpace: 'nowrap',
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+          }}>
+            {request.artist}
+            {request.bpm && ` · ${request.bpm} BPM`}
+            {request.key_signature && ` · ${request.key_signature}`}
+          </p>
+          <p style={{
+            fontSize: '0.6875rem',
+            color: 'var(--fg-faint)',
+            marginTop: '0.125rem',
+          }}>
+            {ago}
+          </p>
+        </div>
       </div>
       <div style={{ display: 'flex', gap: '0.375rem' }}>
         <button
           onClick={onAccept}
           style={{
+            flex: 1,
             background: 'var(--accent)',
             color: 'var(--accent-fg)',
             border: 'none',
-            padding: '0.5rem 1rem',
+            padding: '0.625rem',
             borderRadius: '8px',
             fontSize: '0.8125rem',
             fontWeight: 500,
@@ -302,10 +329,11 @@ function RequestCard({ request, onAccept, onReject }: RequestCardProps) {
         <button
           onClick={onReject}
           style={{
+            flex: 1,
             background: 'transparent',
             color: 'var(--fg-subtle)',
             border: '0.5px solid var(--border)',
-            padding: '0.5rem 1rem',
+            padding: '0.625rem',
             borderRadius: '8px',
             fontSize: '0.8125rem',
           }}
