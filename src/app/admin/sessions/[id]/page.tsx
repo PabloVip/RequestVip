@@ -2,6 +2,7 @@ import { redirect, notFound } from 'next/navigation';
 import Link from 'next/link';
 import { createUserClient, createServiceClient } from '@/lib/supabase-server';
 import RequestsChart from './requests-chart';
+import DeleteButton from './delete-button';
 import ThemeToggle from '@/components/theme-toggle';
 
 export default async function SessionDetailPage({
@@ -171,11 +172,7 @@ export default async function SessionDetailPage({
                   backgroundPosition: 'center',
                 }} />
                 <div style={{ flex: 1, minWidth: 0 }}>
-                  <p style={{
-                    fontSize: '0.9375rem',
-                    fontWeight: 500,
-                    letterSpacing: '-0.01em',
-                  }}>
+                  <p style={{ fontSize: '0.9375rem', fontWeight: 500, letterSpacing: '-0.01em' }}>
                     {track.title}
                   </p>
                   <p style={{ fontSize: '0.8125rem', color: 'var(--fg-subtle)' }}>{track.artist}</p>
@@ -221,11 +218,7 @@ export default async function SessionDetailPage({
                   backgroundPosition: 'center',
                 }} />
                 <div style={{ flex: 1, minWidth: 0 }}>
-                  <p style={{
-                    fontSize: '0.875rem',
-                    fontWeight: 500,
-                    letterSpacing: '-0.01em',
-                  }}>
+                  <p style={{ fontSize: '0.875rem', fontWeight: 500, letterSpacing: '-0.01em' }}>
                     {r.title}
                   </p>
                   <p style={{ fontSize: '0.75rem', color: 'var(--fg-subtle)' }}>{r.artist}</p>
@@ -238,14 +231,12 @@ export default async function SessionDetailPage({
       )}
 
       {list.length === 0 && (
-        <p style={{
-          color: 'var(--fg-subtle)',
-          textAlign: 'center',
-          padding: '2rem',
-        }}>
+        <p style={{ color: 'var(--fg-subtle)', textAlign: 'center', padding: '2rem' }}>
           No hubo peticiones en esta sesión
         </p>
       )}
+
+      <DeleteButton sessionId={session.id} />
     </main>
   );
 }
