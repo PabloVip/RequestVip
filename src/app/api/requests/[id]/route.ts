@@ -72,13 +72,13 @@ export async function PATCH(
         return NextResponse.json({ error: 'Cannot accept this request' }, { status: 409 });
       }
       nextStatus = 'accepted';
-      updates.accepted_at = now;
+      updates.responded_at = now;
     } else if (body.data.action === 'reject') {
       if (request.status !== 'pending') {
         return NextResponse.json({ error: 'Cannot reject this request' }, { status: 409 });
       }
       nextStatus = 'rejected';
-      updates.rejected_at = now;
+      updates.responded_at = now;
       if (body.data.rejection_reason) {
         updates.rejection_reason = body.data.rejection_reason;
       }
