@@ -13,8 +13,12 @@ export async function PATCH(
 ) {
   try {
     const { id } = await params;
-    const body = Body.safeParse(await req.json());
+    const rawBody = await req.json();
+    console.log('PATCH /api/requests/[id] called', { id, rawBody });
+
+    const body = Body.safeParse(rawBody);
     if (!body.success) {
+      console.error('Invalid body:', body.error);
       return NextResponse.json({ error: 'Invalid input' }, { status: 400 });
     }
 
@@ -65,7 +69,7 @@ export async function PATCH(
 
     let nextStatus: string;
     const now = new Date().toISOString();
-    const updates: Record<string, unknown> = {};
+    const updates: Record<string, unknown> = { status: '' };
 
     if (body.data.action === 'accept') {
       if (request.status !== 'pending') {
@@ -90,19 +94,29 @@ export async function PATCH(
       updates.played_at = now;
     }
 
-    const { error: updateError } = await supabase
+    updates.status = nextStatus;
+    console.log('About to update with:', updates);
+
+    const { data: updated, error: updateError } = await supabase
       .from('song_requests')
-      .update({ status: nextStatus, ...updates })
-      .eq('id', id);
+      .update(updates)
+      .eq('id', id)
+      .select();
 
     if (updateError) {
-      console.error('Update failed:', updateError);
-      return NextResponse.json({ error: 'Failed to update', details: updateError.message }, { status: 500 });
+      console.error('UPDATE FAILED:', JSON.stringify(updateError));
+      return NextResponse.json({
+        error: 'Failed to update',
+        details: updateError.message,
+        hint: updateError.hint,
+        code: updateError.code,
+      }, { status: 500 });
     }
 
+    console.log('Update successful:', updated);
     return NextResponse.json({ ok: true, status: nextStatus });
   } catch (e) {
-    console.error('Unexpected error in PATCH /api/requests:', e);
+    console.error('Unexpected error:', e);
     return NextResponse.json({
       error: 'Internal error',
       details: e instanceof Error ? e.message : 'unknown',
