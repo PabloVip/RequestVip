@@ -2,6 +2,7 @@ import { redirect } from 'next/navigation';
 import Link from 'next/link';
 import { createUserClient, createServiceClient } from '@/lib/supabase-server';
 import ThemeToggle from '@/components/theme-toggle';
+import DeleteAllButton from './delete-all-button';
 
 export default async function SessionsPage() {
   const supabase = await createUserClient();
@@ -134,10 +135,7 @@ export default async function SessionsPage() {
                 }}>
                   {session.venue ?? 'Sesión sin nombre'}
                 </p>
-                <p style={{
-                  fontSize: '0.8125rem',
-                  color: 'var(--fg-subtle)',
-                }}>
+                <p style={{ fontSize: '0.8125rem', color: 'var(--fg-subtle)' }}>
                   {new Date(session.started_at).toLocaleString('es-ES', {
                     day: 'numeric',
                     month: 'short',
@@ -186,6 +184,10 @@ export default async function SessionsPage() {
           </Link>
         ))}
       </div>
+
+      {sessionsWithStats.length > 0 && (
+        <DeleteAllButton sessionCount={sessionsWithStats.length} />
+      )}
     </main>
   );
 }
