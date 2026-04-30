@@ -106,7 +106,7 @@ export default function QRView({ url, djName, djInstagram, venue }: Props) {
         fontWeight: 500,
         letterSpacing: '0.05em',
       }}>
-        TUNEDROP
+        TUNEVIP
       </div>
     </main>
   );

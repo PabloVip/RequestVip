@@ -55,7 +55,7 @@ export default function LoginForm() {
             letterSpacing: '-0.02em',
             marginBottom: '0.5rem',
           }}>
-            TuneDrop
+            TuneVIP
           </h1>
           <p style={{ color: 'var(--fg-subtle)', fontSize: '0.9375rem' }}>
             Inicia sesión como DJ
