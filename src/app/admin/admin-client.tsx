@@ -30,6 +30,7 @@ interface GlobalStats {
 interface Props {
   djName: string;
   djInstagram: string;
+  djSlug: string;
   activeSession: ActiveSession | null;
   stats: Stats | null;
   userEmail: string;
@@ -39,6 +40,7 @@ interface Props {
 export default function AdminClient({
   djName,
   djInstagram,
+  djSlug,
   activeSession,
   stats,
   userEmail,
@@ -106,7 +108,7 @@ export default function AdminClient({
         display: 'flex',
         justifyContent: 'space-between',
         alignItems: 'flex-start',
-        marginBottom: '2rem',
+        marginBottom: '1.5rem',
         gap: '0.75rem',
       }}>
         <div style={{ minWidth: 0, flex: 1 }}>
@@ -120,11 +122,7 @@ export default function AdminClient({
           }}>
             {djName}
           </h1>
-          <p style={{
-            color: 'var(--fg-subtle)',
-            fontSize: '0.875rem',
-            marginTop: '0.125rem',
-          }}>
+          <p style={{ color: 'var(--fg-subtle)', fontSize: '0.875rem', marginTop: '0.125rem' }}>
             @{djInstagram}
           </p>
         </div>
@@ -151,6 +149,61 @@ export default function AdminClient({
           </button>
         </div>
       </header>
+
+      <section style={{
+        background: 'var(--bg-subtle)',
+        border: '0.5px solid var(--border-subtle)',
+        padding: '1rem 1.25rem',
+        borderRadius: '12px',
+        marginBottom: '1.5rem',
+        display: 'flex',
+        alignItems: 'center',
+        gap: '0.875rem',
+      }}>
+        <div style={{
+          width: '36px',
+          height: '36px',
+          background: 'var(--accent-soft)',
+          color: 'var(--accent-soft-fg)',
+          border: '0.5px solid var(--accent-border)',
+          borderRadius: '8px',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          flexShrink: 0,
+        }}>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <rect x="3" y="3" width="7" height="7" />
+            <rect x="14" y="3" width="7" height="7" />
+            <rect x="14" y="14" width="7" height="7" />
+            <rect x="3" y="14" width="7" height="7" />
+          </svg>
+        </div>
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <p style={{ fontSize: '0.875rem', fontWeight: 500, letterSpacing: '-0.01em' }}>
+            Tu QR permanente
+          </p>
+          <p style={{ fontSize: '0.75rem', color: 'var(--fg-subtle)' }}>
+            Imprímelo una vez, úsalo siempre
+          </p>
+        </div>
+        <Link
+          href={`/u/${djSlug}/qr`}
+          target="_blank"
+          style={{
+            background: 'var(--accent)',
+            color: 'var(--accent-fg)',
+            padding: '0.5rem 0.875rem',
+            borderRadius: '8px',
+            fontSize: '0.8125rem',
+            fontWeight: 500,
+            textDecoration: 'none',
+            flexShrink: 0,
+          }}
+        >
+          Ver QR
+        </Link>
+      </section>
 
       {globalStats.totalSessions > 0 && (
         <section style={{ marginBottom: '2rem' }}>
@@ -262,9 +315,6 @@ export default function AdminClient({
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
               <Link href={`/dj/${activeSession.id}`} style={primaryLinkStyle}>
                 Abrir dashboard
-              </Link>
-              <Link href={`/qr/${activeSession.id}`} target="_blank" style={secondaryLinkStyle}>
-                Ver código QR
               </Link>
               <div style={{ display: 'flex', gap: '0.5rem' }}>
                 <button onClick={handleToggleAccepting} style={{ ...secondaryButtonStyle, flex: 1 }}>
@@ -397,13 +447,6 @@ const secondaryButtonStyle: React.CSSProperties = {
   borderRadius: '8px',
   fontSize: '0.875rem',
   fontWeight: 500,
-};
-
-const secondaryLinkStyle: React.CSSProperties = {
-  ...secondaryButtonStyle,
-  display: 'block',
-  textAlign: 'center',
-  textDecoration: 'none',
 };
 
 function Stat({ label, value }: { label: string; value: number }) {

@@ -82,6 +82,7 @@ export default async function AdminPage() {
     <AdminClient
       djName={dj.display_name}
       djInstagram={dj.ig_username}
+      djSlug={dj.slug}
       activeSession={activeSession}
       stats={stats}
       userEmail={user.email ?? ''}
