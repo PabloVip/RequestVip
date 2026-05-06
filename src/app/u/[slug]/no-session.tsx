@@ -68,7 +68,7 @@ export default function NoSession({ djName, djInstagram }: Props) {
             </p>
 
             {djInstagram && (
-              
+              <a
                 href={`https://instagram.com/${djInstagram}`}
                 target="_blank"
                 rel="noopener noreferrer"

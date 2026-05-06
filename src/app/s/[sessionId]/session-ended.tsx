@@ -31,67 +31,14 @@ export default function SessionEnded({ djName, djInstagram }: Props) {
         maxWidth: '420px',
         width: '100%',
       }}>
-        <div style={{
-          width: '64px',
-          height: '64px',
-          background: 'var(--bg-muted)',
-          borderRadius: '50%',
-          margin: '0 auto 1.5rem',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-        }}>
-          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--fg-subtle)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-            <circle cx="12" cy="12" r="10" />
-            <line x1="12" y1="8" x2="12" y2="12" />
-            <line x1="12" y1="16" x2="12.01" y2="16" />
-          </svg>
-        </div>
-
-        <h1 style={{
-          fontSize: '1.5rem',
-          fontWeight: 500,
-          letterSpacing: '-0.02em',
-          marginBottom: '0.5rem',
-        }}>
+        <h1 style={{ fontSize: '1.5rem', fontWeight: 500, letterSpacing: '-0.02em', marginBottom: '0.75rem' }}>
           {djName ? `${djName} no está pinchando ahora` : 'Sesión no disponible'}
         </h1>
-
-        <p style={{
-          color: 'var(--fg-subtle)',
-          fontSize: '0.9375rem',
-          lineHeight: 1.5,
-          marginBottom: djInstagram ? '1.5rem' : 0,
-        }}>
-          {djName
-            ? 'Vuelve a escanear el código cuando empiece la próxima sesión.'
-            : 'Esta sesión ya no está disponible.'}
+        <p style={{ color: 'var(--fg-subtle)', fontSize: '0.9375rem', lineHeight: 1.5, marginBottom: djInstagram ? '1.5rem' : 0 }}>
+          {djName ? 'Vuelve a escanear el código cuando empiece la próxima sesión.' : 'Esta sesión ya no está disponible.'}
         </p>
-
         {djInstagram && (
-          
-            href={`https://instagram.com/${djInstagram}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              gap: '0.5rem',
-              background: 'var(--accent)',
-              color: 'var(--accent-fg)',
-              padding: '0.75rem 1.5rem',
-              borderRadius: '10px',
-              fontSize: '0.9375rem',
-              fontWeight: 500,
-              textDecoration: 'none',
-            }}
-          >
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
-              <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
-              <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" />
-            </svg>
+          <a href={`https://instagram.com/${djInstagram}`} target="_blank" rel="noopener noreferrer" style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', background: 'var(--accent)', color: 'var(--accent-fg)', padding: '0.75rem 1.5rem', borderRadius: '10px', fontSize: '0.9375rem', fontWeight: 500, textDecoration: 'none' }}>
             Seguir a @{djInstagram}
           </a>
         )}
