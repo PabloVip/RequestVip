@@ -16,7 +16,6 @@ interface Props {
   venue: string | null;
   accepting: boolean;
   igPostCode: string | null;
-  djSlug?: string;
 }
 
 type Stage = 'verify' | 'search' | 'status' | 'ended';
@@ -65,7 +64,7 @@ export default function AttendeeApp(props: Props) {
   }, [props.sessionId]);
 
   if (stage === 'ended') {
-    return <SessionEnded djName={props.djName} djSlug={props.djSlug ?? null} />;
+    return <SessionEnded djName={props.djName} djInstagram={props.djInstagram} />;
   }
 
   return (

@@ -20,7 +20,7 @@ export default async function SessionPage({
     .single();
 
   if (!session) {
-    return <SessionEnded djName={null} djSlug={null} />;
+    return <SessionEnded djName={null} djInstagram={null} />;
   }
 
   const dj = session.djs as unknown as {
@@ -30,11 +30,11 @@ export default async function SessionPage({
   } | null;
 
   if (!dj) {
-    return <SessionEnded djName={null} djSlug={null} />;
+    return <SessionEnded djName={null} djInstagram={null} />;
   }
 
   if (session.status !== 'active') {
-    return <SessionEnded djName={dj.display_name} djSlug={dj.slug} />;
+    return <SessionEnded djName={dj.display_name} djInstagram={dj.ig_username} />;
   }
 
   return (
