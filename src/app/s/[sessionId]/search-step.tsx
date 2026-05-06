@@ -15,9 +15,10 @@ interface Track {
 interface Props {
   sessionId: string;
   onRequested: (id: string) => void;
+  onSessionEnded?: () => void;
 }
 
-export default function SearchStep({ sessionId, onRequested }: Props) {
+export default function SearchStep({ sessionId, onRequested, onSessionEnded }: Props) {
   const [query, setQuery] = useState('');
   const [tracks, setTracks] = useState<Track[]>([]);
   const [loading, setLoading] = useState(false);
@@ -63,6 +64,12 @@ export default function SearchStep({ sessionId, onRequested }: Props) {
           explicit: track.explicit,
         }),
       });
+
+      if (res.status === 404 || res.status === 423) {
+        if (onSessionEnded) onSessionEnded();
+        return;
+      }
+
       const data = await res.json();
       if (!res.ok) {
         setError(data.error ?? 'Error al pedir la canción');
@@ -102,23 +109,13 @@ export default function SearchStep({ sessionId, onRequested }: Props) {
       )}
 
       {loading && (
-        <p style={{
-          color: 'var(--fg-subtle)',
-          textAlign: 'center',
-          padding: '1rem',
-          fontSize: '0.875rem',
-        }}>
+        <p style={{ color: 'var(--fg-subtle)', textAlign: 'center', padding: '1rem', fontSize: '0.875rem' }}>
           Buscando...
         </p>
       )}
 
       {!loading && tracks.length === 0 && query && (
-        <p style={{
-          color: 'var(--fg-subtle)',
-          textAlign: 'center',
-          padding: '1.5rem',
-          fontSize: '0.875rem',
-        }}>
+        <p style={{ color: 'var(--fg-subtle)', textAlign: 'center', padding: '1.5rem', fontSize: '0.875rem' }}>
           No se encontraron resultados
         </p>
       )}

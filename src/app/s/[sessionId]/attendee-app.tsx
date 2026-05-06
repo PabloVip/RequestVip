@@ -1,9 +1,11 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { createBrowserClient } from '@supabase/ssr';
 import VerifyStep from './verify-step';
 import SearchStep from './search-step';
 import StatusStep from './status-step';
+import SessionEnded from './session-ended';
 import ThemeToggle from '@/components/theme-toggle';
 
 interface Props {
@@ -14,19 +16,57 @@ interface Props {
   venue: string | null;
   accepting: boolean;
   igPostCode: string | null;
+  djSlug?: string;
 }
 
-type Stage = 'verify' | 'search' | 'status';
+type Stage = 'verify' | 'search' | 'status' | 'ended';
 
 export default function AttendeeApp(props: Props) {
   const [stage, setStage] = useState<Stage>('verify');
   const [requestId, setRequestId] = useState<string | null>(null);
+  const [accepting, setAccepting] = useState(props.accepting);
 
   useEffect(() => {
     const cookies = document.cookie.split(';').map(c => c.trim());
     const hasAttendee = cookies.some(c => c.startsWith('attendee_id='));
     if (hasAttendee) setStage('search');
   }, []);
+
+  useEffect(() => {
+    const supabase = createBrowserClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+    );
+
+    const channel = supabase
+      .channel(`session:${props.sessionId}`)
+      .on(
+        'postgres_changes',
+        {
+          event: 'UPDATE',
+          schema: 'public',
+          table: 'sessions',
+          filter: `id=eq.${props.sessionId}`,
+        },
+        (payload) => {
+          const next = payload.new as { status: string; accepting: boolean };
+          if (next.status !== 'active') {
+            setStage('ended');
+          } else {
+            setAccepting(next.accepting);
+          }
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [props.sessionId]);
+
+  if (stage === 'ended') {
+    return <SessionEnded djName={props.djName} djSlug={props.djSlug ?? null} />;
+  }
 
   return (
     <main style={{
@@ -72,7 +112,7 @@ export default function AttendeeApp(props: Props) {
         </p>
       </header>
 
-      {!props.accepting && (
+      {!accepting && (
         <div style={{
           background: 'var(--warning-bg)',
           color: 'var(--warning-fg)',
@@ -96,13 +136,14 @@ export default function AttendeeApp(props: Props) {
         />
       )}
 
-      {stage === 'search' && props.accepting && (
+      {stage === 'search' && accepting && (
         <SearchStep
           sessionId={props.sessionId}
           onRequested={(id) => {
             setRequestId(id);
             setStage('status');
           }}
+          onSessionEnded={() => setStage('ended')}
         />
       )}
 

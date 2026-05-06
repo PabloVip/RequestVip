@@ -1,6 +1,6 @@
-import { notFound } from 'next/navigation';
 import { createServiceClient } from '@/lib/supabase-server';
 import AttendeeApp from './attendee-app';
+import SessionEnded from './session-ended';
 
 export default async function SessionPage({
   params,
@@ -16,8 +16,8 @@ export default async function SessionPage({
     .eq('id', sessionId)
     .single();
 
-  if (!session || session.status !== 'active') {
-    notFound();
+  if (!session) {
+    return <SessionEnded djName={null} djSlug={null} />;
   }
 
   const dj = session.djs as unknown as {
@@ -26,7 +26,13 @@ export default async function SessionPage({
     slug: string;
   } | null;
 
-  if (!dj) notFound();
+  if (!dj) {
+    return <SessionEnded djName={null} djSlug={null} />;
+  }
+
+  if (session.status !== 'active') {
+    return <SessionEnded djName={dj.display_name} djSlug={dj.slug} />;
+  }
 
   return (
     <AttendeeApp
