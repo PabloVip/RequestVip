@@ -2,6 +2,9 @@ import { createServiceClient } from '@/lib/supabase-server';
 import AttendeeApp from './attendee-app';
 import SessionEnded from './session-ended';
 
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 export default async function SessionPage({
   params,
 }: {
