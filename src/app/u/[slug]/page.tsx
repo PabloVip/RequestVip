@@ -2,6 +2,9 @@ import { redirect } from 'next/navigation';
 import { createServiceClient } from '@/lib/supabase-server';
 import NoSession from './no-session';
 
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 export default async function DjSlugPage({
   params,
 }: {
