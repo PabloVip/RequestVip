@@ -39,11 +39,16 @@ export async function searchTracks(query: string, limit = 10): Promise<SearchRes
 }
 
 export async function getAudioFeatures(trackId: string): Promise<AudioFeatures> {
-  // 1. Intentar con Deezer primero
+  let title: string | null = null;
+  let artist: string | null = null;
+
   try {
     const res = await fetch(`${DEEZER_TRACK}/${trackId}`, { next: { revalidate: 0 } });
     if (res.ok) {
       const t = await res.json();
+      title = t.title ?? null;
+      artist = t.artist?.name ?? null;
+
       if (t.bpm && t.bpm > 0) {
         return {
           bpm: Math.round(t.bpm * 10) / 10,
@@ -51,33 +56,38 @@ export async function getAudioFeatures(trackId: string): Promise<AudioFeatures> 
           energy: null,
         };
       }
-      // Deezer no tiene BPM para esta canción, guardamos título y artista para fallback
-      const title = t.title ?? null;
-      const artist = t.artist?.name ?? null;
-      if (title && artist) {
-        return await getFromSongBPM(title, artist);
-      }
     }
-  } catch {
-    // continúa al fallback
+  } catch {}
+
+  if (title) {
+    return await getFromSongBPM(title, artist);
   }
 
   return { bpm: null, key: null, energy: null };
 }
 
-async function getFromSongBPM(title: string, artist: string): Promise<AudioFeatures> {
+async function getFromSongBPM(title: string, artist: string | null): Promise<AudioFeatures> {
   const apiKey = process.env.GETSONGBPM_API_KEY;
   if (!apiKey) return { bpm: null, key: null, energy: null };
 
   try {
-    const lookup = encodeURIComponent(`${title} ${artist}`);
-    const url = `${GETSONGBPM_API}/search/?api_key=${apiKey}&type=song&lookup=${lookup}`;
+    const url = `${GETSONGBPM_API}/search/?api_key=${apiKey}&type=song&lookup=${encodeURIComponent(title)}`;
     const res = await fetch(url, { next: { revalidate: 0 } });
     if (!res.ok) return { bpm: null, key: null, energy: null };
 
     const data = await res.json();
-    const song = data.search?.[0];
-    if (!song) return { bpm: null, key: null, energy: null };
+    const results: any[] = data.search ?? [];
+    if (!results.length) return { bpm: null, key: null, energy: null };
+
+    let song = results[0];
+    if (artist) {
+      const artistLower = artist.toLowerCase();
+      const match = results.find((s: any) =>
+        s.artist?.name?.toLowerCase().includes(artistLower) ||
+        artistLower.includes(s.artist?.name?.toLowerCase() ?? '')
+      );
+      if (match) song = match;
+    }
 
     const bpm = song.tempo ? Math.round(parseFloat(song.tempo) * 10) / 10 : null;
     const key = song.key_of ?? null;
