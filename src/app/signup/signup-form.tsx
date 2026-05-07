@@ -10,6 +10,7 @@ export default function SignupForm() {
   const router = useRouter();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [displayName, setDisplayName] = useState('');
   const [igUsername, setIgUsername] = useState('');
   const [loading, setLoading] = useState(false);
@@ -18,6 +19,16 @@ export default function SignupForm() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
+
+    if (password.length < 6) {
+      setError('La contraseña debe tener al menos 6 caracteres');
+      return;
+    }
+    if (password !== confirmPassword) {
+      setError('Las contraseñas no coinciden');
+      return;
+    }
+
     setLoading(true);
 
     const supabase = createClient();
@@ -86,10 +97,29 @@ export default function SignupForm() {
             <input type="email" required value={email} onChange={(e) => setEmail(e.target.value)} autoComplete="email" />
           </div>
 
-          <div style={{ marginBottom: '1.5rem' }}>
+          <div style={{ marginBottom: '0.875rem' }}>
             <label style={labelStyle}>Contraseña</label>
-            <input type="password" required minLength={6} value={password} onChange={(e) => setPassword(e.target.value)} autoComplete="new-password" />
+            <input
+              type="password"
+              required
+              minLength={6}
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              autoComplete="new-password"
+            />
             <p style={{ fontSize: '0.75rem', color: 'var(--fg-faint)', marginTop: '0.375rem' }}>Mínimo 6 caracteres</p>
+          </div>
+
+          <div style={{ marginBottom: '1.5rem' }}>
+            <label style={labelStyle}>Confirmar contraseña</label>
+            <input
+              type="password"
+              required
+              minLength={6}
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              autoComplete="new-password"
+            />
           </div>
 
           {error && (
