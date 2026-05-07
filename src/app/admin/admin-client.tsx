@@ -375,15 +375,30 @@ export default function AdminClient({
         </section>
       )}
 
-      <p style={{
-        color: 'var(--fg-faint)',
-        fontSize: '0.75rem',
-        textAlign: 'center',
-        marginTop: '2.5rem',
-        wordBreak: 'break-all',
-      }}>
-        {userEmail}
-      </p>
+      <div style={{ marginTop: '2.5rem', textAlign: 'center' }}>
+        <p style={{
+          color: 'var(--fg-faint)',
+          fontSize: '0.75rem',
+          wordBreak: 'break-all',
+        }}>
+          {userEmail}
+        </p>
+        <p style={{
+          color: 'var(--fg-faint)',
+          fontSize: '0.6875rem',
+          marginTop: '0.5rem',
+        }}>
+          BPM data by{' '}
+          <a
+            href="https://getsongbpm.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{ color: 'var(--fg-subtle)', textDecoration: 'underline' }}
+          >
+            GetSongBPM
+          </a>
+        </p>
+      </div>
     </main>
   );
 }
