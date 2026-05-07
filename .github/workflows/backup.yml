@@ -1,0 +1,43 @@
+name: Daily Database Backup
+
+on:
+  schedule:
+    - cron: '0 3 * * *'
+  workflow_dispatch:
+
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Install PostgreSQL client
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y postgresql-client
+
+      - name: Create backup
+        env:
+          PGPASSWORD: ${{ secrets.SUPABASE_DB_PASSWORD }}
+        run: |
+          pg_dump \
+            -h db.zdzgsvlwvxldotifaqff.supabase.co \
+            -U postgres \
+            -d postgres \
+            --no-password \
+            --format=custom \
+            -f backup_$(date +%Y%m%d_%H%M%S).dump
+
+      - name: Upload to backup repo
+        env:
+          TOKEN: ${{ secrets.BACKUP_REPO_TOKEN }}
+          REPO: ${{ secrets.BACKUP_REPO }}
+        run: |
+          git config --global user.email "backup@tunevip.app"
+          git config --global user.name "TuneVIP Backup"
+          git clone https://x-access-token:${TOKEN}@github.com/${REPO}.git backup-repo
+          mv *.dump backup-repo/
+          cd backup-repo
+          ls -t *.dump 2>/dev/null | tail -n +31 | xargs -r rm
+          git add .
+          git commit -m "Backup $(date +%Y-%m-%d %H:%M)"
+          git push
