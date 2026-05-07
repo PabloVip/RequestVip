@@ -20,9 +20,10 @@ jobs:
           PGPASSWORD: ${{ secrets.SUPABASE_DB_PASSWORD }}
         run: |
           pg_dump \
-            -h db.zdzgsvlwvxldotifaqff.supabase.co \
-            -U postgres \
+            -h aws-0-eu-west-1.pooler.supabase.com \
+            -U postgres.zdzgsvlwvxldotifaqff \
             -d postgres \
+            -p 6543 \
             --no-password \
             --format=custom \
             -f backup_$(date +%Y%m%d_%H%M%S).dump
@@ -39,5 +40,5 @@ jobs:
           cd backup-repo
           ls -t *.dump 2>/dev/null | tail -n +31 | xargs -r rm
           git add .
-          git commit -m "Backup $(date +%Y-%m-%d %H:%M)"
+          git commit -m "Backup $(date +%Y-%m-%d)"
           git push
