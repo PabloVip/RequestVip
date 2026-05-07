@@ -74,7 +74,7 @@ export default function LoginForm() {
             />
           </div>
 
-          <div style={{ marginBottom: '1.5rem' }}>
+          <div style={{ marginBottom: '0.75rem' }}>
             <label style={labelStyle}>Contraseña</label>
             <input
               type="password"
@@ -83,6 +83,16 @@ export default function LoginForm() {
               onChange={(e) => setPassword(e.target.value)}
               autoComplete="current-password"
             />
+          </div>
+
+          <div style={{ textAlign: 'right', marginBottom: '1.5rem' }}>
+            <Link href="/forgot-password" style={{
+              color: 'var(--fg-subtle)',
+              fontSize: '0.8125rem',
+              textDecoration: 'none',
+            }}>
+              ¿Olvidaste tu contraseña?
+            </Link>
           </div>
 
           {error && (
@@ -107,6 +117,20 @@ export default function LoginForm() {
             fontWeight: 500,
           }}>
             Regístrate
+          </Link>
+        </p>
+
+        <p style={{
+          textAlign: 'center',
+          color: 'var(--fg-faint)',
+          fontSize: '0.75rem',
+          marginTop: '2rem',
+        }}>
+          <Link href="/legal" style={{
+            color: 'var(--fg-subtle)',
+            textDecoration: 'none',
+          }}>
+            Privacidad y términos
           </Link>
         </p>
       </div>
