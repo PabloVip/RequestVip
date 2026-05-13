@@ -5,16 +5,13 @@ import type { Metadata } from 'next';
 
 export function generateMetadata(): Metadata {
   return {
+    title: 'TuneVIP',
+    description: 'Pide canciones al DJ',
     other: {
       ...Sentry.getTraceData()
     }
   };
 }
-
-export const metadata: Metadata = {
-  title: 'TuneVIP',
-  description: 'Pide canciones al DJ',
-};
 
 const themeScript = `
 (function() {
